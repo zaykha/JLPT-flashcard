@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JLPT Vocabulary Kanji Flash Card</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #111827;
+            color: #f3f4f6;
+        }
+
+        .flashcard-container {
+            perspective: 1200px;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 320px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.7s cubic-bezier(0.4, 0.0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .flashcard.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #374151;
+        }
+
+        .flashcard-front {
+            font-size: 2rem;
+            background: linear-gradient(145deg, #1f2937, #374151);
+        }
+
+        .flashcard-back {
+            background: linear-gradient(145deg, #166534, #15803d);
+            color: #f0fdf4;
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        #front-text {
+            font-size: clamp(4rem, 20vw, 8rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        #english-back {
+            font-size: clamp(1.5rem, 6vw, 2.5rem);
+            font-weight: 700;
+        }
+        
+        #hiragana-back {
+            font-size: clamp(1rem, 4vw, 1.5rem);
+            font-weight: 400;
+            color: #cbd5e1;
+            margin-bottom: 0.5rem;
+        }
+
+        #kanji-back {
+            font-size: clamp(2rem, 8vw, 3rem);
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        .pronunciation-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid #4b5563;
+        }
+        .pronunciation-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Specific mobile adjustments */
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+            .flashcard {
+                height: 250px;
+            }
+            #front-text {
+                font-size: clamp(3rem, 15vw, 6rem);
+            }
+            #english-back {
+                font-size: clamp(1.2rem, 5vw, 2rem);
+            }
+            #hiragana-back {
+                font-size: clamp(0.9rem, 3.5vw, 1.2rem);
+            }
+            #kanji-back {
+                font-size: clamp(1.8rem, 7vw, 2.5rem);
+            }
+            .controls-group {
+                flex-direction: column;
+            }
+            .controls-group button {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+            .controls-bottom-row {
+                grid-template-columns: 1fr;
+            }
+            .controls-bottom-row button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8 flex flex-col items-center justify-center min-h-screen">
+
+    <div class="w-full max-w-lg mx-auto">
+        <header class="text-center mb-4 sm:mb-8">
+            <h1 class="text-3xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400 pb-2">
+                JLPT Vocabulary Kanji Flash Card
+            </h1>
+            <p class="text-gray-400 text-sm sm:text-base">Select a "Day" from your Google Sheet to start practicing!</p>
+        </header>
+
+        <!-- Input Area (now for Google Sheets) -->
+        <div id="input-area" class="w-full mb-6">
+            <div class="p-4 rounded-lg bg-gray-800 border border-gray-700">
+                <h3 class="text-lg font-bold mb-2">Load from Google Sheet</h3>
+                <div class="flex flex-col sm:flex-row gap-2 items-center">
+                    <select id="day-select" class="flex-grow w-full p-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="" disabled selected>Select a Day...</option>
+                    </select>
+                    <button id="load-btn" class="w-full sm:w-auto py-2 px-4 bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-bold rounded-lg shadow-md">
+                        <i class="fas fa-sync-alt mr-2"></i>Load Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Generate Buttons -->
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button id="generate-kanji-to-english-btn" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 transition-colors duration-300 text-white font-bold rounded-lg shadow-md text-lg hidden">
+                    Kanji to English
+                </button>
+                <button id="generate-english-to-kanji-btn" class="w-full py-3 bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-bold rounded-lg shadow-md text-lg hidden">
+                    English to Japanese
+                </button>
+            </div>
+        </div>
+
+        <!-- Flashcard UI (Initially hidden) -->
+        <div id="flashcard-ui" class="hidden">
+            <!-- Flashcard -->
+            <div class="flashcard-container w-full mb-6">
+                <div id="flashcard" class="flashcard">
+                    <!-- Front (dynamic) -->
+                    <div id="flashcard-front" class="flashcard-face flashcard-front">
+                        <h2 id="front-text"></h2>
+                    </div>
+                    <!-- Back (dynamic) -->
+                    <div id="flashcard-back" class="flashcard-face flashcard-back flex flex-col items-center justify-center">
+                        <p id="hiragana-back" class="text-xl text-gray-200 mb-2"></p>
+                        <h2 id="kanji-back" class="text-3xl font-bold"></h2>
+                        <h2 id="english-back" class="text-3xl font-bold"></h2>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="flex flex-row sm:flex-row justify-center items-center gap-4 mb-4">
+                <button id="pronunciation-btn" class="py-3 px-6 bg-gray-700 hover:bg-gray-600 transition-colors duration-300 text-white font-bold rounded-lg shadow-md text-lg">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+                <button id="previous-btn" class="py-3 px-6 bg-gray-700 hover:bg-gray-600 transition-colors duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <button id="shuffle-btn" class="py-3 px-6 bg-gray-700 hover:bg-gray-600 transition-colors duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg">
+                    <i class="fas fa-random"></i>
+                </button>
+                <button id="next-btn" class="py-3 px-6 bg-emerald-600 hover:bg-emerald-700 transition-colors duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            
+            <div class="w-full grid grid-cols-1 gap-4">
+                 <button id="back-to-selection-btn" class="w-full py-3 bg-gray-800 hover:bg-gray-700 transition-colors duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg">
+                    Back to Selection
+                </button>
+            </div>
+            <div id="card-count" class="text-center text-gray-500 font-semibold text-xl mt-4"></div>
+        </div>
+    </div>
+
+    <script>
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBBLGqGXdeAH0sY255sFHikYF8-GA6ShxGZP9Gy_zoGyBu3NQpl7qNtDLvAdRScNiGAsy_lRGpcixH/pub?gid=1229152076&single=true&output=csv';
+
+        let words = [];
+        let currentCardIndex = 0;
+        let cardList = [];
+        let isKanjiToEnglishMode = true;
+        let allSheetData = [];
+        
+        // Elements
+        const daySelect = document.getElementById('day-select');
+        const loadBtn = document.getElementById('load-btn');
+        const generateKanjiToEnglishBtn = document.getElementById('generate-kanji-to-english-btn');
+        const generateEnglishToKanjiBtn = document.getElementById('generate-english-to-kanji-btn');
+        const inputArea = document.getElementById('input-area');
+        const flashcardUi = document.getElementById('flashcard-ui');
+
+        const flashcardElement = document.getElementById('flashcard');
+        const frontTextElement = document.getElementById('front-text');
+        const englishBackElement = document.getElementById('english-back');
+        const hiraganaBackElement = document.getElementById('hiragana-back');
+        const kanjiBackElement = document.getElementById('kanji-back');
+        const pronunciationBtn = document.getElementById('pronunciation-btn');
+        const cardCountElement = document.getElementById('card-count');
+        const nextBtn = document.getElementById('next-btn');
+        const previousBtn = document.getElementById('previous-btn');
+        const shuffleBtn = document.getElementById('shuffle-btn');
+        const backToSelectionBtn = document.getElementById('back-to-selection-btn');
+        
+        // Load data from Google Sheet on page load
+        document.addEventListener('DOMContentLoaded', loadSheetData);
+
+        // Fetch data from the Google Sheet and populate the dropdown
+        function loadSheetData() {
+            loadBtn.innerHTML = '<div class="loading-spinner"></div>';
+            Papa.parse(sheetUrl, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    if (results.data.length > 0 && results.meta.fields) {
+                        allSheetData = results.data;
+                        
+                        daySelect.innerHTML = '<option value="" disabled selected>Select a Day...</option>';
+                        // Populate dropdown with only non-empty, valid headers
+                        results.meta.fields.forEach(header => {
+                            const trimmedHeader = header.trim();
+                            if (trimmedHeader && allSheetData.some(row => row[header])) {
+                                const option = document.createElement('option');
+                                option.value = trimmedHeader;
+                                option.textContent = trimmedHeader;
+                                daySelect.appendChild(option);
+                            }
+                        });
+                    } else {
+                        console.error("No data found in the Google Sheet or headers are missing.");
+                        showModal("Error", "No data found in the Google Sheet. Please check your file and ensure it is published to the web.");
+                    }
+                    loadBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Load Data';
+                },
+                error: function(error) {
+                    console.error("Error fetching data from Google Sheet:", error);
+                    showModal("Error", "Failed to load data from the Google Sheet. Please ensure it's published to the web as a CSV.");
+                    loadBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Load Data';
+                }
+            });
+        }
+        
+        // Generate cards from the selected column
+        function generateCards(mode) {
+            const selectedDay = daySelect.value;
+            if (!selectedDay) {
+                showModal("Warning", "Please select a day to practice.");
+                return;
+            }
+
+            const newWords = [];
+            const regex = /^(.+?)\s*[\(（](.+?)[\)）]\s*[:：]\s*(.+?)$/;
+
+            allSheetData.forEach(row => {
+                const dayString = row[selectedDay];
+                if (dayString) {
+                    const match = dayString.match(regex);
+                    if (match) {
+                        newWords.push({
+                            kanji: match[1].trim(),
+                            hiragana: match[2].trim(),
+                            english: match[3].trim()
+                        });
+                    } else {
+                        console.warn(`Could not parse data for: "${dayString}"`);
+                    }
+                }
+            });
+
+            if (newWords.length === 0) {
+                showModal("Warning", "No words found for the selected day. Please check your Google Sheet format.");
+            } else {
+                words = newWords;
+                cardList = [...words];
+                currentCardIndex = 0;
+                isKanjiToEnglishMode = (mode === 'kanji-to-english');
+                updateCard();
+                inputArea.classList.add('hidden');
+                flashcardUi.classList.remove('hidden');
+            }
+        }
+
+        // Update card content
+        function updateCard() {
+            const currentCard = cardList[currentCardIndex];
+            
+            if (isKanjiToEnglishMode) {
+                frontTextElement.textContent = currentCard.kanji;
+                englishBackElement.textContent = currentCard.english;
+                hiraganaBackElement.textContent = currentCard.hiragana;
+                kanjiBackElement.textContent = "";
+            } else {
+                frontTextElement.textContent = currentCard.english;
+                kanjiBackElement.textContent = currentCard.kanji;
+                hiraganaBackElement.textContent = currentCard.hiragana;
+                englishBackElement.textContent = "";
+            }
+
+            flashcardElement.classList.remove('is-flipped');
+            cardCountElement.textContent = `${currentCardIndex + 1} / ${cardList.length}`;
+        }
+
+        // Flip card
+        function flipCard() {
+            flashcardElement.classList.toggle('is-flipped');
+        }
+
+        // Next card
+        function nextCard() {
+            currentCardIndex = (currentCardIndex + 1) % cardList.length;
+            updateCard();
+        }
+
+        // Previous card
+        function previousCard() {
+            currentCardIndex = (currentCardIndex - 1 + cardList.length) % cardList.length;
+            updateCard();
+        }
+
+        // Shuffle cards
+        function shuffleCards() {
+            for (let i = cardList.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cardList[i], cardList[j]] = [cardList[j], cardList[i]];
+            }
+            currentCardIndex = 0;
+            updateCard();
+            shuffleBtn.textContent = 'Shuffled!';
+            setTimeout(() => {
+                shuffleBtn.innerHTML = '<i class="fas fa-random"></i>';
+            }, 1000);
+        }
+
+        // Go back to input screen
+        function backToSelection() {
+            flashcardUi.classList.add('hidden');
+            inputArea.classList.remove('hidden');
+            generateKanjiToEnglishBtn.classList.add('hidden');
+            generateEnglishToKanjiBtn.classList.add('hidden');
+        }
+
+        // Speak the word using Web Speech API
+        function speakWord(event) {
+            event.stopPropagation();
+            if (!('speechSynthesis' in window)) {
+                showModal("Warning", "Speech synthesis is not supported in this browser.");
+                return;
+            }
+            
+            // Cancel any previous speech
+            window.speechSynthesis.cancel();
+
+            const currentCard = cardList[currentCardIndex];
+            const textToSpeak = isKanjiToEnglishMode ? currentCard.hiragana : currentCard.kanji + ' ' + currentCard.hiragana;
+            
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            utterance.lang = 'ja-JP';
+
+            // On some mobile devices, it requires an active user gesture to work.
+            // This is a common workaround.
+            setTimeout(() => {
+                window.speechSynthesis.speak(utterance);
+            }, 100);
+        }
+        
+        function showModal(title, message) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50';
+            modal.innerHTML = `
+                <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center">
+                    <h3 class="text-xl font-bold mb-4">${title}</h3>
+                    <p class="text-gray-300">${message}</p>
+                    <button class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg" onclick="this.parentNode.parentNode.remove()">Close</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Event listeners
+        daySelect.addEventListener('change', () => {
+            if (daySelect.value) {
+                generateKanjiToEnglishBtn.classList.remove('hidden');
+                generateEnglishToKanjiBtn.classList.remove('hidden');
+            } else {
+                generateKanjiToEnglishBtn.classList.add('hidden');
+                generateEnglishToKanjiBtn.classList.add('hidden');
+            }
+        });
+        loadBtn.addEventListener('click', loadSheetData);
+        generateKanjiToEnglishBtn.addEventListener('click', () => generateCards('kanji-to-english'));
+        generateEnglishToKanjiBtn.addEventListener('click', () => generateCards('english-to-kanji'));
+        flashcardElement.addEventListener('click', flipCard);
+        pronunciationBtn.addEventListener('click', speakWord);
+        nextBtn.addEventListener('click', nextCard);
+        previousBtn.addEventListener('click', previousCard);
+        shuffleBtn.addEventListener('click', shuffleCards);
+        backToSelectionBtn.addEventListener('click', backToSelection);
+    </script>
+</body>
+</html>
