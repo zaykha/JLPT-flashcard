@@ -394,27 +394,45 @@
         }
 
         // Speak the word using Web Speech API
+        let isSpeaking = false;
         function speakWord(event) {
             event.stopPropagation();
+            if (isSpeaking) {
+                window.speechSynthesis.cancel();
+                isSpeaking = false;
+                pronunciationBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                return;
+            }
+
             if (!('speechSynthesis' in window)) {
                 showModal("Warning", "Speech synthesis is not supported in this browser.");
                 return;
             }
             
-            // Cancel any previous speech
-            window.speechSynthesis.cancel();
-
             const currentCard = cardList[currentCardIndex];
             const textToSpeak = isKanjiToEnglishMode ? currentCard.hiragana : currentCard.kanji + ' ' + currentCard.hiragana;
             
             const utterance = new SpeechSynthesisUtterance(textToSpeak);
             utterance.lang = 'ja-JP';
 
-            // On some mobile devices, it requires an active user gesture to work.
-            // This is a common workaround.
-            setTimeout(() => {
-                window.speechSynthesis.speak(utterance);
-            }, 100);
+            utterance.onstart = () => {
+                isSpeaking = true;
+                pronunciationBtn.innerHTML = '<i class="fas fa-volume-up animate-pulse"></i>';
+            };
+
+            utterance.onend = () => {
+                isSpeaking = false;
+                pronunciationBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+            };
+
+            utterance.onerror = (e) => {
+                isSpeaking = false;
+                pronunciationBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                console.error('Speech synthesis error:', e);
+                showModal("Error", "Speech failed. Please try again.");
+            };
+
+            window.speechSynthesis.speak(utterance);
         }
         
         function showModal(title, message) {
