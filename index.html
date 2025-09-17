@@ -394,39 +394,33 @@
         }
 
         // Speak the word using Web Speech API
-        let isSpeaking = false;
+        // This function is designed to be more robust on mobile by immediately calling
+        // the speak command without any delays or complex state checks.
         function speakWord(event) {
             event.stopPropagation();
-            if (isSpeaking) {
-                window.speechSynthesis.cancel();
-                isSpeaking = false;
-                pronunciationBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-                return;
-            }
 
             if (!('speechSynthesis' in window)) {
                 showModal("Warning", "Speech synthesis is not supported in this browser.");
                 return;
             }
-            
+
             const currentCard = cardList[currentCardIndex];
             const textToSpeak = isKanjiToEnglishMode ? currentCard.hiragana : currentCard.kanji + ' ' + currentCard.hiragana;
+            
+            // Cancel any previous speech before starting a new one
+            window.speechSynthesis.cancel();
             
             const utterance = new SpeechSynthesisUtterance(textToSpeak);
             utterance.lang = 'ja-JP';
 
-            utterance.onstart = () => {
-                isSpeaking = true;
-                pronunciationBtn.innerHTML = '<i class="fas fa-volume-up animate-pulse"></i>';
-            };
-
+            // We can still use these handlers to update UI, but the core speak call is immediate
+            // to satisfy the user gesture requirement.
+            pronunciationBtn.innerHTML = '<i class="fas fa-volume-up animate-pulse"></i>';
             utterance.onend = () => {
-                isSpeaking = false;
                 pronunciationBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
             };
 
             utterance.onerror = (e) => {
-                isSpeaking = false;
                 pronunciationBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
                 console.error('Speech synthesis error:', e);
                 showModal("Error", "Speech failed. Please try again.");
