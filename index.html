@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JLPT Vocabulary Kanji Flash Card</title>
+    <title>JLPT memorize Flash Card</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -153,31 +153,68 @@
     <div class="w-full max-w-lg mx-auto">
         <header class="text-center mb-4 sm:mb-8">
             <h1 class="text-3xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400 pb-2">
-                JLPT Vocabulary Kanji Flash Card
+                Flashcard Memory
             </h1>
-            <p class="text-gray-400 text-sm sm:text-base">Select a "Day" from your Google Sheet to start practicing!</p>
+            <p id="sub-header-text" class="text-gray-400 text-sm sm:text-base mt-2"></p>
         </header>
 
-        <!-- Input Area (now for Google Sheets) -->
-        <div id="input-area" class="w-full mb-6">
+        <!-- Main UI Sections -->
+        <div id="password-ui" class="w-full mb-6">
+            <div class="p-4 rounded-lg bg-gray-800 border border-gray-700 text-center">
+                <input type="password" id="password-input" placeholder="Enter password" class="w-full p-2 mb-4 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <button id="password-btn" class="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-lg">
+                    Log In
+                </button>
+            </div>
+        </div>
+
+        <div id="level-selection-ui" class="w-full mb-6 hidden">
+            <div class="p-4 rounded-lg bg-gray-800 border border-gray-700 text-center">
+                <h3 class="text-lg font-bold mb-4">Choose Your Level</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <button class="level-btn w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-xl" data-level="N4">N4</button>
+                    <button class="level-btn w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-xl" data-level="N3">N3</button>
+                    <button class="level-btn w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-xl" data-level="N2">N2</button>
+                    <button class="level-btn w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-xl" data-level="N1">N1</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="study-mode-selection-ui" class="w-full mb-6 hidden">
+            <div class="p-4 rounded-lg bg-gray-800 border border-gray-700 text-center">
+                <h3 id="mode-header" class="text-lg font-bold mb-4">You chose <span id="selected-level"></span>. Now, choose a study mode.</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <button id="vocab-mode-btn" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-lg">
+                        <i class="fas fa-book mr-2"></i>Vocabulary
+                    </button>
+                    <button id="grammar-mode-btn" class="w-full py-3 bg-gradient-to-r from-rose-600 to-pink-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-lg">
+                        <i class="fas fa-pen-nib mr-2"></i>Grammar
+                    </button>
+                </div>
+                <button id="back-to-level-btn" class="mt-4 py-2 px-4 bg-gradient-to-r from-gray-700 to-gray-600 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Levels
+                </button>
+            </div>
+        </div>
+
+        <div id="flashcard-input-ui" class="w-full mb-6 hidden">
             <div class="p-4 rounded-lg bg-gray-800 border border-gray-700">
-                <h3 class="text-lg font-bold mb-2">Load from Google Sheet</h3>
+                <h3 class="text-lg font-bold mb-2">Load Day Data</h3>
                 <div class="flex flex-col sm:flex-row gap-2 items-center">
                     <select id="day-select" class="flex-grow w-full p-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="" disabled selected>Select a Day...</option>
                     </select>
-                    <button id="load-btn" class="w-full sm:w-auto py-2 px-4 bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-bold rounded-lg shadow-md">
+                    <button id="load-btn" class="py-2 px-4 bg-gradient-to-r from-blue-600 to-cyan-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md">
                         <i class="fas fa-sync-alt mr-2"></i>Load Data
                     </button>
                 </div>
             </div>
 
-            <!-- Generate Buttons -->
             <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <button id="generate-kanji-to-english-btn" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 transition-colors duration-300 text-white font-bold rounded-lg shadow-md text-lg hidden">
+                <button id="generate-kanji-to-english-btn" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-lg hidden">
                     Kanji to English
                 </button>
-                <button id="generate-english-to-kanji-btn" class="w-full py-3 bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-bold rounded-lg shadow-md text-lg hidden">
+                <button id="generate-english-to-kanji-btn" class="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-lg hidden">
                     English to Japanese
                 </button>
             </div>
@@ -203,23 +240,23 @@
 
             <!-- Controls -->
             <div class="flex flex-row sm:flex-row justify-center items-center gap-4 mb-4">
-                <button id="pronunciation-btn" class="py-3 px-6 bg-gray-700 hover:bg-gray-600 transition-colors duration-300 text-white font-bold rounded-lg shadow-md text-lg">
+                <button id="pronunciation-btn" class="py-3 px-6 bg-gradient-to-r from-gray-700 to-gray-600 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-lg">
                     <i class="fas fa-volume-up"></i>
                 </button>
-                <button id="previous-btn" class="py-3 px-6 bg-gray-700 hover:bg-gray-600 transition-colors duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg">
+                <button id="previous-btn" class="py-3 px-6 bg-gradient-to-r from-gray-700 to-gray-600 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg">
                     <i class="fas fa-arrow-left"></i>
                 </button>
-                <button id="shuffle-btn" class="py-3 px-6 bg-gray-700 hover:bg-gray-600 transition-colors duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg">
+                <button id="shuffle-btn" class="py-3 px-6 bg-gradient-to-r from-gray-700 to-gray-600 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg">
                     <i class="fas fa-random"></i>
                 </button>
-                <button id="next-btn" class="py-3 px-6 bg-emerald-600 hover:bg-emerald-700 transition-colors duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg">
+                <button id="next-btn" class="py-3 px-6 bg-gradient-to-r from-emerald-600 to-teal-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg">
                     <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
             
             <div class="w-full grid grid-cols-1 gap-4">
-                 <button id="back-to-selection-btn" class="w-full py-3 bg-gray-800 hover:bg-gray-700 transition-colors duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg">
-                    Back to Selection
+                 <button id="back-to-mode-btn" class="w-full py-3 bg-gradient-to-r from-gray-800 to-gray-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg">
+                    Back to Study Modes
                 </button>
             </div>
             <div id="card-count" class="text-center text-gray-500 font-semibold text-xl mt-4"></div>
@@ -228,21 +265,36 @@
 
     <script>
         const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBBLGqGXdeAH0sY255sFHikYF8-GA6ShxGZP9Gy_zoGyBu3NQpl7qNtDLvAdRScNiGAsy_lRGpcixH/pub?gid=1229152076&single=true&output=csv';
+        const correctPassword = '486237abC';
+        const passwordCacheKey = 'jlpt-app-password';
 
         let words = [];
         let currentCardIndex = 0;
         let cardList = [];
         let isKanjiToEnglishMode = true;
         let allSheetData = [];
+        let selectedLevel = null;
         
         // Elements
+        const passwordUi = document.getElementById('password-ui');
+        const passwordInput = document.getElementById('password-input');
+        const passwordBtn = document.getElementById('password-btn');
+        const levelSelectionUi = document.getElementById('level-selection-ui');
+        const studyModeSelectionUi = document.getElementById('study-mode-selection-ui');
+        const flashcardInputUi = document.getElementById('flashcard-input-ui');
+        const flashcardUi = document.getElementById('flashcard-ui');
+        const subHeaderTextElement = document.getElementById('sub-header-text');
+        
+        const selectedLevelElement = document.getElementById('selected-level');
+        const vocabModeBtn = document.getElementById('vocab-mode-btn');
+        const grammarModeBtn = document.getElementById('grammar-mode-btn');
+        const backToLevelBtn = document.getElementById('back-to-level-btn');
+        const backToModeBtn = document.getElementById('back-to-mode-btn');
+
         const daySelect = document.getElementById('day-select');
         const loadBtn = document.getElementById('load-btn');
         const generateKanjiToEnglishBtn = document.getElementById('generate-kanji-to-english-btn');
         const generateEnglishToKanjiBtn = document.getElementById('generate-english-to-kanji-btn');
-        const inputArea = document.getElementById('input-area');
-        const flashcardUi = document.getElementById('flashcard-ui');
-
         const flashcardElement = document.getElementById('flashcard');
         const frontTextElement = document.getElementById('front-text');
         const englishBackElement = document.getElementById('english-back');
@@ -253,10 +305,15 @@
         const nextBtn = document.getElementById('next-btn');
         const previousBtn = document.getElementById('previous-btn');
         const shuffleBtn = document.getElementById('shuffle-btn');
-        const backToSelectionBtn = document.getElementById('back-to-selection-btn');
         
-        // Load data from Google Sheet on page load
-        document.addEventListener('DOMContentLoaded', loadSheetData);
+        // Initial check on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem(passwordCacheKey) === correctPassword) {
+                showLevelSelection();
+            } else {
+                showPasswordScreen();
+            }
+        });
 
         // Fetch data from the Google Sheet and populate the dropdown
         function loadSheetData() {
@@ -269,11 +326,12 @@
                     if (results.data.length > 0 && results.meta.fields) {
                         allSheetData = results.data;
                         
+                        // Populate dropdown with day numbers based on the selected level
                         daySelect.innerHTML = '<option value="" disabled selected>Select a Day...</option>';
-                        // Populate dropdown with only non-empty, valid headers
+                        const levelPrefix = selectedLevel + ' ';
                         results.meta.fields.forEach(header => {
                             const trimmedHeader = header.trim();
-                            if (trimmedHeader && allSheetData.some(row => row[header])) {
+                            if (trimmedHeader.startsWith(levelPrefix) && allSheetData.some(row => row[header])) {
                                 const option = document.createElement('option');
                                 option.value = trimmedHeader;
                                 option.textContent = trimmedHeader;
@@ -322,15 +380,16 @@
             });
 
             if (newWords.length === 0) {
-                showModal("Warning", "No words found for the selected day. Please check your Google Sheet format.");
+                showModal("Warning", `No words found for the selected day in ${selectedLevel}. Please check your Google Sheet format.`);
             } else {
                 words = newWords;
                 cardList = [...words];
                 currentCardIndex = 0;
                 isKanjiToEnglishMode = (mode === 'kanji-to-english');
                 updateCard();
-                inputArea.classList.add('hidden');
+                flashcardInputUi.classList.add('hidden');
                 flashcardUi.classList.remove('hidden');
+                subHeaderTextElement.textContent = `JLPT ${selectedLevel} Vocabulary`;
             }
         }
 
@@ -385,20 +444,9 @@
             }, 1000);
         }
 
-        // Go back to input screen
-        function backToSelection() {
-            flashcardUi.classList.add('hidden');
-            inputArea.classList.remove('hidden');
-            generateKanjiToEnglishBtn.classList.add('hidden');
-            generateEnglishToKanjiBtn.classList.add('hidden');
-        }
-
         // Speak the word using Web Speech API
-        // This function is designed to be more robust on mobile by immediately calling
-        // the speak command without any delays or complex state checks.
         function speakWord(event) {
             event.stopPropagation();
-
             if (!('speechSynthesis' in window)) {
                 showModal("Warning", "Speech synthesis is not supported in this browser.");
                 return;
@@ -407,14 +455,11 @@
             const currentCard = cardList[currentCardIndex];
             const textToSpeak = isKanjiToEnglishMode ? currentCard.hiragana : currentCard.kanji + ' ' + currentCard.hiragana;
             
-            // Cancel any previous speech before starting a new one
             window.speechSynthesis.cancel();
             
             const utterance = new SpeechSynthesisUtterance(textToSpeak);
             utterance.lang = 'ja-JP';
 
-            // We can still use these handlers to update UI, but the core speak call is immediate
-            // to satisfy the user gesture requirement.
             pronunciationBtn.innerHTML = '<i class="fas fa-volume-up animate-pulse"></i>';
             utterance.onend = () => {
                 pronunciationBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
@@ -423,7 +468,7 @@
             utterance.onerror = (e) => {
                 pronunciationBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
                 console.error('Speech synthesis error:', e);
-                showModal("Error", "Speech failed. Please try again.");
+                showModal("Error", "Speech synthesis failed. This is often a temporary browser issue. Please try again.");
             };
 
             window.speechSynthesis.speak(utterance);
@@ -442,7 +487,81 @@
             document.body.appendChild(modal);
         }
 
-        // Event listeners
+        // Main UI Navigation
+        function showPasswordScreen() {
+            passwordUi.classList.remove('hidden');
+            levelSelectionUi.classList.add('hidden');
+            studyModeSelectionUi.classList.add('hidden');
+            flashcardInputUi.classList.add('hidden');
+            flashcardUi.classList.add('hidden');
+            subHeaderTextElement.textContent = "Enter the password to access your study materials.";
+        }
+
+        function showLevelSelection() {
+            passwordUi.classList.add('hidden');
+            levelSelectionUi.classList.remove('hidden');
+            studyModeSelectionUi.classList.add('hidden');
+            flashcardInputUi.classList.add('hidden');
+            flashcardUi.classList.add('hidden');
+            subHeaderTextElement.textContent = "Choose your proficiency level to begin.";
+        }
+
+        function showStudyModeSelection() {
+            passwordUi.classList.add('hidden');
+            levelSelectionUi.classList.add('hidden');
+            studyModeSelectionUi.classList.remove('hidden');
+            flashcardInputUi.classList.add('hidden');
+            flashcardUi.classList.add('hidden');
+            subHeaderTextElement.textContent = `You chose ${selectedLevel}. Now, choose a study mode.`;
+            selectedLevelElement.textContent = selectedLevel;
+        }
+
+        function showFlashcardInput() {
+            passwordUi.classList.add('hidden');
+            levelSelectionUi.classList.add('hidden');
+            studyModeSelectionUi.classList.add('hidden');
+            flashcardInputUi.classList.remove('hidden');
+            flashcardUi.classList.add('hidden');
+            subHeaderTextElement.textContent = `Select a "Day" from the ${selectedLevel} level to start practicing!`;
+            // Check if it's N3, otherwise show coming soon message
+            if (selectedLevel === "N3") {
+                loadSheetData();
+            } else {
+                 showModal("Coming Soon!", `The ${selectedLevel} content is not yet available.`);
+                 flashcardInputUi.classList.add('hidden');
+                 showStudyModeSelection();
+            }
+        }
+        
+        // Event listeners for the new UI
+        passwordBtn.addEventListener('click', () => {
+            if (passwordInput.value === correctPassword) {
+                localStorage.setItem(passwordCacheKey, correctPassword);
+                showLevelSelection();
+            } else {
+                showModal("Incorrect Password", "Please try again.");
+            }
+        });
+
+        document.querySelectorAll('.level-btn').forEach(button => {
+            button.addEventListener('click', (event) => {
+                selectedLevel = event.target.dataset.level;
+                showStudyModeSelection();
+            });
+        });
+
+        vocabModeBtn.addEventListener('click', () => {
+            showFlashcardInput();
+        });
+
+        grammarModeBtn.addEventListener('click', () => {
+            showModal("Coming Soon!", "The grammar section is not yet available. Please check back later!");
+        });
+
+        backToLevelBtn.addEventListener('click', showLevelSelection);
+        backToModeBtn.addEventListener('click', showStudyModeSelection);
+
+        // Existing Event listeners
         daySelect.addEventListener('change', () => {
             if (daySelect.value) {
                 generateKanjiToEnglishBtn.classList.remove('hidden');
@@ -452,7 +571,11 @@
                 generateEnglishToKanjiBtn.classList.add('hidden');
             }
         });
-        loadBtn.addEventListener('click', loadSheetData);
+
+        loadBtn.addEventListener('click', () => {
+            loadSheetData();
+        });
+
         generateKanjiToEnglishBtn.addEventListener('click', () => generateCards('kanji-to-english'));
         generateEnglishToKanjiBtn.addEventListener('click', () => generateCards('english-to-kanji'));
         flashcardElement.addEventListener('click', flipCard);
@@ -460,7 +583,6 @@
         nextBtn.addEventListener('click', nextCard);
         previousBtn.addEventListener('click', previousCard);
         shuffleBtn.addEventListener('click', shuffleCards);
-        backToSelectionBtn.addEventListener('click', backToSelection);
     </script>
 </body>
 </html>
