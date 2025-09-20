@@ -1,173 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JLPT memorize Flash Card</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JLPT Vocabulary Kanji Flash Card — UI Fixed (Grammar Faces Swapped)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap');
 
-        body {
-            font-family: 'Inter', 'Noto Sans JP', sans-serif;
-            background-color: #111827;
-            color: #f3f4f6;
-        }
+        body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background-color: #111827; color: #f3f4f6; }
+        .flashcard-container { perspective: 1200px; }
+        .flashcard { width: 100%; height: 320px; position: relative; transform-style: preserve-3d; transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .flashcard.is-flipped { transform: rotateY(180deg); }
+        .flashcard-face { position: absolute; inset: 0; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 1.5rem; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1); border: 1px solid #374151; }
+        .flashcard-front { font-size: 2rem; background: linear-gradient(145deg, #1f2937, #374151); }
+        .flashcard-back { background: linear-gradient(145deg, #166534, #15803d); color: #f0fdf4; transform: rotateY(180deg); display: flex; flex-direction: column; justify-content: center; align-items: center; padding-top: 2rem; padding-bottom: 2rem; }
+        /* Use on any face that should be on the back (rotated) */
+        .flashcard-face--back { transform: rotateY(180deg); }
 
-        .flashcard-container {
-            perspective: 1200px;
-        }
+        #front-text { font-size: clamp(4rem, 20vw, 8rem); font-weight: 700; margin-bottom: 1rem; }
+        #english-back { font-size: clamp(1.5rem, 6vw, 2.5rem); font-weight: 700; }
+        #hiragana-back { font-size: clamp(1rem, 4vw, 1.5rem); font-weight: 400; color: #cbd5e1; margin-bottom: 0.5rem; }
+        #kanji-back { font-size: clamp(2rem, 8vw, 3rem); font-weight: 700; margin-top: 0.5rem; }
 
-        .flashcard {
-            width: 100%;
-            height: 320px;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.7s cubic-bezier(0.4, 0.0, 0.2, 1);
-            cursor: pointer;
-        }
+        @media (max-width: 640px) { body { padding: 1rem; } .flashcard { height: 250px; } #front-text { font-size: clamp(3rem, 15vw, 6rem); } #english-back { font-size: clamp(1.2rem, 5vw, 2rem); } #hiragana-back { font-size: clamp(0.9rem, 3.5vw, 1.2rem); } #kanji-back { font-size: clamp(1.8rem, 7vw, 2.5rem); } .controls-group { flex-direction: column; } .controls-group button { width: 100%; margin-bottom: 0.5rem; } .controls-bottom-row { grid-template-columns: 1fr; } .controls-bottom-row button { width: 100%; } }
 
-        .flashcard.is-flipped {
-            transform: rotateY(180deg);
-        }
-
-        .flashcard-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
-            border: 1px solid #374151;
-        }
-
-        .flashcard-front {
-            font-size: 2rem;
-            background: linear-gradient(145deg, #1f2937, #374151);
-        }
-
-        .flashcard-back {
-            background: linear-gradient(145deg, #166534, #15803d);
-            color: #f0fdf4;
-            transform: rotateY(180deg);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding-top: 2rem;
-            padding-bottom: 2rem;
-        }
-
-        #front-text {
-            font-size: clamp(4rem, 20vw, 8rem);
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        #english-back {
-            font-size: clamp(1.5rem, 6vw, 2.5rem);
-            font-weight: 700;
-        }
-        
-        #hiragana-back {
-            font-size: clamp(1rem, 4vw, 1.5rem);
-            font-weight: 400;
-            color: #cbd5e1;
-            margin-bottom: 0.5rem;
-        }
-
-        #kanji-back {
-            font-size: clamp(2rem, 8vw, 3rem);
-            font-weight: 700;
-            margin-top: 0.5rem;
-        }
-
-        .pronunciation-btn {
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid #4b5563;
-        }
-        .pronunciation-btn:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        .loading-spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid #fff;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Specific mobile adjustments */
-        @media (max-width: 640px) {
-            body {
-                padding: 1rem;
-            }
-            .flashcard {
-                height: 250px;
-            }
-            #front-text {
-                font-size: clamp(3rem, 15vw, 6rem);
-            }
-            #english-back {
-                font-size: clamp(1.2rem, 5vw, 2rem);
-            }
-            #hiragana-back {
-                font-size: clamp(0.9rem, 3.5vw, 1.2rem);
-            }
-            #kanji-back {
-                font-size: clamp(1.8rem, 7vw, 2.5rem);
-            }
-            .controls-group {
-                flex-direction: column;
-            }
-            .controls-group button {
-                width: 100%;
-                margin-bottom: 0.5rem;
-            }
-            .controls-bottom-row {
-                grid-template-columns: 1fr;
-            }
-            .controls-bottom-row button {
-                width: 100%;
-            }
-        }
+        /* Grammar UI helpers */
+        #grammar-strength-tag { font-size: 0.75rem; white-space: nowrap; }
+        .metric-strip { display: flex; align-items: center; justify-content: flex-end; gap: .75rem; flex-wrap: wrap; }
+        .metric-strip .bar-wrap { display:flex; align-items:center; gap:.5rem; }
+        .metric-strip .bar { width: 5.5rem; height: 0.625rem; border-radius: 9999px; background-color: #374151; overflow: hidden; }
+        .metric-strip .bar > div { height: 100%; border-radius: 9999px; }
+        @media (max-width:640px){ .metric-strip .bar{ width:4.25rem } }
     </style>
 </head>
 <body class="p-4 sm:p-8 flex flex-col items-center justify-center min-h-screen">
-
     <div class="w-full max-w-lg mx-auto">
         <header class="text-center mb-4 sm:mb-8">
-            <h1 class="text-3xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400 pb-2">
-                Flashcard Memory
-            </h1>
+            <h1 class="text-3xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400 pb-2">Flashcard Memory</h1>
             <p id="sub-header-text" class="text-gray-400 text-sm sm:text-base mt-2"></p>
         </header>
 
-        <!-- Main UI Sections -->
+        <!-- PASSWORD -->
         <div id="password-ui" class="w-full mb-6">
             <div class="p-4 rounded-lg bg-gray-800 border border-gray-700 text-center">
-                <input type="password" id="password-input" placeholder="Enter password" class="w-full p-2 mb-4 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                <button id="password-btn" class="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-lg">
-                    Log In
-                </button>
+                <input type="password" id="password-input" placeholder="Enter password" class="w-full p-2 mb-4 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+                <button id="password-btn" class="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-lg">Log In</button>
             </div>
         </div>
 
+        <!-- LEVELS -->
         <div id="level-selection-ui" class="w-full mb-6 hidden">
             <div class="p-4 rounded-lg bg-gray-800 border border-gray-700 text-center">
                 <h3 class="text-lg font-bold mb-4">Choose Your Level</h3>
@@ -180,23 +64,19 @@
             </div>
         </div>
 
+        <!-- STUDY MODE -->
         <div id="study-mode-selection-ui" class="w-full mb-6 hidden">
             <div class="p-4 rounded-lg bg-gray-800 border border-gray-700 text-center">
                 <h3 id="mode-header" class="text-lg font-bold mb-4">You chose <span id="selected-level"></span>. Now, choose a study mode.</h3>
                 <div class="grid grid-cols-2 gap-4">
-                    <button id="vocab-mode-btn" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-lg">
-                        <i class="fas fa-book mr-2"></i>Vocabulary
-                    </button>
-                    <button id="grammar-mode-btn" class="w-full py-3 bg-gradient-to-r from-rose-600 to-pink-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-lg">
-                        <i class="fas fa-pen-nib mr-2"></i>Grammar
-                    </button>
+                    <button id="vocab-mode-btn" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-lg"><i class="fas fa-book mr-2"></i>Vocabulary</button>
+                    <button id="grammar-mode-btn" class="w-full py-3 bg-gradient-to-r from-rose-600 to-pink-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-lg"><i class="fas fa-pen-nib mr-2"></i>Grammar</button>
                 </div>
-                <button id="back-to-level-btn" class="mt-4 py-2 px-4 bg-gradient-to-r from-gray-700 to-gray-600 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md">
-                    <i class="fas fa-arrow-left mr-2"></i>Back to Levels
-                </button>
+                <button id="back-to-level-btn" class="mt-4 py-2 px-4 bg-gradient-to-r from-gray-700 to-gray-600 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md"><i class="fas fa-arrow-left mr-2"></i>Back to Levels</button>
             </div>
         </div>
 
+        <!-- VOCAB INPUT -->
         <div id="flashcard-input-ui" class="w-full mb-6 hidden">
             <div class="p-4 rounded-lg bg-gray-800 border border-gray-700">
                 <h3 class="text-lg font-bold mb-2">Load Day Data</h3>
@@ -204,32 +84,23 @@
                     <select id="day-select" class="flex-grow w-full p-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="" disabled selected>Select a Day...</option>
                     </select>
-                    <button id="load-btn" class="py-2 px-4 bg-gradient-to-r from-blue-600 to-cyan-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md">
-                        <i class="fas fa-sync-alt mr-2"></i>Load Data
-                    </button>
+                    <button id="load-btn" class="py-2 px-4 bg-gradient-to-r from-blue-600 to-cyan-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md"><i class="fas fa-sync-alt mr-2"></i>Load Data</button>
                 </div>
             </div>
 
             <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <button id="generate-kanji-to-english-btn" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-lg hidden">
-                    Kanji to English
-                </button>
-                <button id="generate-english-to-kanji-btn" class="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-lg hidden">
-                    English to Japanese
-                </button>
+                <button id="generate-kanji-to-english-btn" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-lg hidden">Kanji to English</button>
+                <button id="generate-english-to-kanji-btn" class="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-lg hidden">English to Japanese</button>
             </div>
         </div>
 
-        <!-- Flashcard UI (Initially hidden) -->
+        <!-- VOCAB FLASHCARD -->
         <div id="flashcard-ui" class="hidden">
-            <!-- Flashcard -->
             <div class="flashcard-container w-full mb-6">
                 <div id="flashcard" class="flashcard">
-                    <!-- Front (dynamic) -->
                     <div id="flashcard-front" class="flashcard-face flashcard-front">
                         <h2 id="front-text"></h2>
                     </div>
-                    <!-- Back (dynamic) -->
                     <div id="flashcard-back" class="flashcard-face flashcard-back flex flex-col items-center justify-center">
                         <p id="hiragana-back" class="text-xl text-gray-200 mb-2"></p>
                         <h2 id="kanji-back" class="text-3xl font-bold"></h2>
@@ -238,33 +109,64 @@
                 </div>
             </div>
 
-            <!-- Controls -->
             <div class="flex flex-row sm:flex-row justify-center items-center gap-4 mb-4">
-                <button id="pronunciation-btn" class="py-3 px-6 bg-gradient-to-r from-gray-700 to-gray-600 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-lg">
-                    <i class="fas fa-volume-up"></i>
-                </button>
-                <button id="previous-btn" class="py-3 px-6 bg-gradient-to-r from-gray-700 to-gray-600 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <button id="shuffle-btn" class="py-3 px-6 bg-gradient-to-r from-gray-700 to-gray-600 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg">
-                    <i class="fas fa-random"></i>
-                </button>
-                <button id="next-btn" class="py-3 px-6 bg-gradient-to-r from-emerald-600 to-teal-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg">
-                    <i class="fas fa-arrow-right"></i>
-                </button>
+                <button id="pronunciation-btn" class="py-3 px-6 bg-gradient-to-r from-gray-700 to-gray-600 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md text-lg"><i class="fas fa-volume-up"></i></button>
+                <button id="previous-btn" class="py-3 px-6 bg-gradient-to-r from-gray-700 to-gray-600 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg"><i class="fas fa-arrow-left"></i></button>
+                <button id="shuffle-btn" class="py-3 px-6 bg-gradient-to-r from-gray-700 to-gray-600 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg"><i class="fas fa-random"></i></button>
+                <button id="next-btn" class="py-3 px-6 bg-gradient-to-r from-emerald-600 to-teal-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg"><i class="fas fa-arrow-right"></i></button>
             </div>
-            
             <div class="w-full grid grid-cols-1 gap-4">
-                 <button id="back-to-mode-btn" class="w-full py-3 bg-gradient-to-r from-gray-800 to-gray-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg">
-                    Back to Study Modes
-                </button>
+                <button id="back-to-mode-btn" class="w-full py-3 bg-gradient-to-r from-gray-800 to-gray-700 hover:opacity-80 transition-opacity duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg">Back to Study Modes</button>
             </div>
             <div id="card-count" class="text-center text-gray-500 font-semibold text-xl mt-4"></div>
+        </div>
+
+        <!-- GRAMMAR FLASHCARD (FRONT/BACK SWAPPED) -->
+        <div id="grammar-ui" class="w-full max-w-lg mx-auto flex flex-col items-center justify-center hidden">
+            <div id="grammar-part-selection" class="w-full text-center">
+                <p id="grammar-loading-message" class="text-lg text-gray-400 mb-6">Loading grammar data...</p>
+            </div>
+
+            <div id="grammar-flashcard-app" class="w-full" style="display:none;">
+                <button id="grammar-back-button" class="mb-4 px-4 py-2 bg-gray-700 text-white font-semibold rounded-lg shadow hover:bg-gray-600 transition-colors">← Back to Parts</button>
+
+                <div id="grammar-flashcard-container" class="flashcard-container mb-6">
+                    <div id="grammar-flashcard" class="flashcard h-[400px] sm:h-[420px]">
+                        <!-- FRONT (now shows English example) -->
+                        <div id="grammar-flashcard-front" class="flashcard-face bg-gray-800 text-gray-200 p-6 sm:p-8">
+                            <p class="text-xl sm:text-2xl font-semibold"></p>
+                        </div>
+
+                        <!-- BACK (now shows Japanese details) -->
+                        <div id="grammar-flashcard-back" class="flashcard-face flashcard-face--back bg-gray-800 text-gray-300 p-6 sm:p-8 text-left">
+                            <div class="w-full metric-strip mb-4">
+                                <span class="text-xs sm:text-sm font-bold text-white px-2 py-1 rounded-full" id="grammar-strength-tag"></span>
+                                <div class="bar-wrap"><div class="bar"><div id="grammar-directness-bar" class="bg-blue-500" style="width:0%"></div></div><span class="text-xs sm:text-sm text-gray-400 whitespace-nowrap">Directness</span></div>
+                                <div class="bar-wrap"><div class="bar"><div id="grammar-politeness-bar" class="bg-green-500" style="width:0%"></div></div><span class="text-xs sm:text-sm text-gray-400 whitespace-nowrap">Politeness</span></div>
+                            </div>
+                            <h2 id="grammar-name" class="text-2xl sm:text-3xl font-extrabold text-white mb-1"></h2>
+                            <h3 id="grammar-meaning" class="text-base sm:text-lg font-medium text-gray-300 mb-1"></h3>
+                            <p id="grammar-form" class="text-sm sm:text-base text-gray-400 mb-4"></p>
+                            <hr class="w-full border-gray-600 mb-4" />
+                            <p id="grammar-japanese-example" class="text-xl sm:text-2xl font-bold text-white mb-3"></p>
+                            <p id="grammar-key-point" class="text-sm sm:text-base text-gray-300"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="grammar-nav-buttons" class="flex justify-center space-x-4">
+                    <button id="grammar-prev-button" class="px-6 py-3 bg-gray-700 text-white font-bold rounded-full shadow-lg hover:bg-gray-600 transition-colors">Previous</button>
+                    <button id="grammar-next-button" class="px-6 py-3 bg-blue-500 text-white font-bold rounded-full shadow-lg hover:bg-blue-600 transition-colors">Next</button>
+                </div>
+            </div>
+
+            <button id="back-from-grammar-btn" class="mt-8 py-3 px-6 bg-gray-800 hover:bg-gray-700 transition-colors duration-300 text-white font-bold rounded-lg shadow-md flex items-center justify-center text-lg"><i class="fas fa-arrow-left mr-2"></i>Back to Study Modes</button>
         </div>
     </div>
 
     <script>
         const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBBLGqGXdeAH0sY255sFHikYF8-GA6ShxGZP9Gy_zoGyBu3NQpl7qNtDLvAdRScNiGAsy_lRGpcixH/pub?gid=1229152076&single=true&output=csv';
+        const grammarDataUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBBLGqGXdeAH0sY255sFHikYF8-GA6ShxGZP9Gy_zoGyBu3NQpl7qNtDLvAdRScNiGAsy_lRGpcixH/pub?gid=1990687568&single=true&output=csv';
         const correctPassword = '486237abC';
         const passwordCacheKey = 'jlpt-app-password';
 
@@ -274,7 +176,12 @@
         let isKanjiToEnglishMode = true;
         let allSheetData = [];
         let selectedLevel = null;
-        
+
+        // Grammar vars
+        let allGrammarData = [];
+        let currentGrammarData = [];
+        let currentGrammarIndex = 0;
+
         // Elements
         const passwordUi = document.getElementById('password-ui');
         const passwordInput = document.getElementById('password-input');
@@ -284,12 +191,13 @@
         const flashcardInputUi = document.getElementById('flashcard-input-ui');
         const flashcardUi = document.getElementById('flashcard-ui');
         const subHeaderTextElement = document.getElementById('sub-header-text');
-        
+        const grammarUi = document.getElementById('grammar-ui');
         const selectedLevelElement = document.getElementById('selected-level');
         const vocabModeBtn = document.getElementById('vocab-mode-btn');
         const grammarModeBtn = document.getElementById('grammar-mode-btn');
         const backToLevelBtn = document.getElementById('back-to-level-btn');
         const backToModeBtn = document.getElementById('back-to-mode-btn');
+        const backFromGrammarBtn = document.getElementById('back-from-grammar-btn');
 
         const daySelect = document.getElementById('day-select');
         const loadBtn = document.getElementById('load-btn');
@@ -305,33 +213,44 @@
         const nextBtn = document.getElementById('next-btn');
         const previousBtn = document.getElementById('previous-btn');
         const shuffleBtn = document.getElementById('shuffle-btn');
-        
-        // Initial check on page load
+
+        // Grammar els
+        const grammarPartSelectionEl = document.getElementById('grammar-part-selection');
+        const grammarLoadingMessageEl = document.getElementById('grammar-loading-message');
+        const grammarFlashcardAppEl = document.getElementById('grammar-flashcard-app');
+        const grammarBackButtonEl = document.getElementById('grammar-back-button');
+        const grammarFlashcardEl = document.getElementById('grammar-flashcard');
+        const grammarFrontContentEl = document.getElementById('grammar-flashcard-front');
+        const grammarBackContentEl = document.getElementById('grammar-flashcard-back');
+        const grammarStrengthTagEl = document.getElementById('grammar-strength-tag');
+        const grammarDirectnessBarEl = document.getElementById('grammar-directness-bar');
+        const grammarPolitenessBarEl = document.getElementById('grammar-politeness-bar');
+        const grammarNameEl = document.getElementById('grammar-name');
+        const grammarMeaningEl = document.getElementById('grammar-meaning');
+        const grammarFormEl = document.getElementById('grammar-form');
+        const grammarJapaneseExampleEl = document.getElementById('grammar-japanese-example');
+        const grammarKeyPointEl = document.getElementById('grammar-key-point');
+        const grammarNextButtonEl = document.getElementById('grammar-next-button');
+        const grammarPrevButtonEl = document.getElementById('grammar-prev-button');
+
         document.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem(passwordCacheKey) === correctPassword) {
-                showLevelSelection();
-            } else {
-                showPasswordScreen();
-            }
+            if (localStorage.getItem(passwordCacheKey) === correctPassword) { showLevelSelection(); } else { showPasswordScreen(); }
         });
 
-        // Fetch data from the Google Sheet and populate the dropdown
         function loadSheetData() {
             loadBtn.innerHTML = '<div class="loading-spinner"></div>';
             Papa.parse(sheetUrl, {
                 download: true,
                 header: true,
                 skipEmptyLines: true,
-                complete: function(results) {
+                complete: function (results) {
                     if (results.data.length > 0 && results.meta.fields) {
                         allSheetData = results.data;
-                        
-                        // Populate dropdown with day numbers based on the selected level
                         daySelect.innerHTML = '<option value="" disabled selected>Select a Day...</option>';
                         const levelPrefix = selectedLevel + ' ';
-                        results.meta.fields.forEach(header => {
+                        results.meta.fields.forEach((header) => {
                             const trimmedHeader = header.trim();
-                            if (trimmedHeader.startsWith(levelPrefix) && allSheetData.some(row => row[header])) {
+                            if (trimmedHeader.startsWith(levelPrefix) && allSheetData.some((row) => row[header])) {
                                 const option = document.createElement('option');
                                 option.value = trimmedHeader;
                                 option.textContent = trimmedHeader;
@@ -339,243 +258,148 @@
                             }
                         });
                     } else {
-                        console.error("No data found in the Google Sheet or headers are missing.");
-                        showModal("Error", "No data found in the Google Sheet. Please check your file and ensure it is published to the web.");
+                        console.error('No data found in the Google Sheet or headers are missing.');
+                        showModal('Error', 'No data found in the Google Sheet. Please check your file and ensure it is published to the web.');
                     }
                     loadBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Load Data';
                 },
-                error: function(error) {
-                    console.error("Error fetching data from Google Sheet:", error);
-                    showModal("Error", "Failed to load data from the Google Sheet. Please ensure it's published to the web as a CSV.");
+                error: function (error) {
+                    console.error('Error fetching data from Google Sheet:', error);
+                    showModal('Error', "Failed to load data from the Google Sheet. Please ensure it's published to the web as a CSV.");
                     loadBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Load Data';
-                }
+                },
             });
         }
-        
-        // Generate cards from the selected column
+
         function generateCards(mode) {
             const selectedDay = daySelect.value;
-            if (!selectedDay) {
-                showModal("Warning", "Please select a day to practice.");
-                return;
-            }
-
+            if (!selectedDay) { showModal('Warning', 'Please select a day to practice.'); return; }
             const newWords = [];
-            const regex = /^(.+?)\s*[\(（](.+?)[\)）]\s*[:：]\s*(.+?)$/;
-
-            allSheetData.forEach(row => {
+            const regex = /^(.*?)\s*[\(（](.*?)[\)）]\s*[:：]\s*(.*?)$/;
+            allSheetData.forEach((row) => {
                 const dayString = row[selectedDay];
                 if (dayString) {
                     const match = dayString.match(regex);
                     if (match) {
-                        newWords.push({
-                            kanji: match[1].trim(),
-                            hiragana: match[2].trim(),
-                            english: match[3].trim()
-                        });
-                    } else {
-                        console.warn(`Could not parse data for: "${dayString}"`);
+                        newWords.push({ kanji: match[1].trim(), hiragana: match[2].trim(), english: match[3].trim() });
                     }
                 }
             });
-
-            if (newWords.length === 0) {
-                showModal("Warning", `No words found for the selected day in ${selectedLevel}. Please check your Google Sheet format.`);
-            } else {
-                words = newWords;
-                cardList = [...words];
-                currentCardIndex = 0;
-                isKanjiToEnglishMode = (mode === 'kanji-to-english');
-                updateCard();
-                flashcardInputUi.classList.add('hidden');
-                flashcardUi.classList.remove('hidden');
-                subHeaderTextElement.textContent = `JLPT ${selectedLevel} Vocabulary`;
-            }
+            if (newWords.length === 0) { showModal('Warning', `No words found for the selected day in ${selectedLevel}. Please check your Google Sheet format.`); return; }
+            words = newWords; cardList = [...words]; currentCardIndex = 0; isKanjiToEnglishMode = (mode === 'kanji-to-english');
+            updateCard();
+            flashcardInputUi.classList.add('hidden');
+            flashcardUi.classList.remove('hidden');
+            subHeaderTextElement.textContent = `JLPT ${selectedLevel} Vocabulary`;
         }
 
-        // Update card content
         function updateCard() {
             const currentCard = cardList[currentCardIndex];
-            
             if (isKanjiToEnglishMode) {
                 frontTextElement.textContent = currentCard.kanji;
                 englishBackElement.textContent = currentCard.english;
                 hiraganaBackElement.textContent = currentCard.hiragana;
-                kanjiBackElement.textContent = "";
+                kanjiBackElement.textContent = '';
             } else {
                 frontTextElement.textContent = currentCard.english;
                 kanjiBackElement.textContent = currentCard.kanji;
                 hiraganaBackElement.textContent = currentCard.hiragana;
-                englishBackElement.textContent = "";
+                englishBackElement.textContent = '';
             }
-
             flashcardElement.classList.remove('is-flipped');
             cardCountElement.textContent = `${currentCardIndex + 1} / ${cardList.length}`;
         }
 
-        // Flip card
-        function flipCard() {
-            flashcardElement.classList.toggle('is-flipped');
-        }
-
-        // Next card
-        function nextCard() {
-            currentCardIndex = (currentCardIndex + 1) % cardList.length;
-            updateCard();
-        }
-
-        // Previous card
-        function previousCard() {
-            currentCardIndex = (currentCardIndex - 1 + cardList.length) % cardList.length;
-            updateCard();
-        }
-
-        // Shuffle cards
+        function flipCard() { flashcardElement.classList.toggle('is-flipped'); }
+        function nextCard() { currentCardIndex = (currentCardIndex + 1) % cardList.length; updateCard(); }
+        function previousCard() { currentCardIndex = (currentCardIndex - 1 + cardList.length) % cardList.length; updateCard(); }
         function shuffleCards() {
-            for (let i = cardList.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [cardList[i], cardList[j]] = [cardList[j], cardList[i]];
-            }
-            currentCardIndex = 0;
-            updateCard();
-            shuffleBtn.textContent = 'Shuffled!';
-            setTimeout(() => {
-                shuffleBtn.innerHTML = '<i class="fas fa-random"></i>';
-            }, 1000);
+            for (let i = cardList.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cardList[i], cardList[j]] = [cardList[j], cardList[i]]; }
+            currentCardIndex = 0; updateCard();
+            shuffleBtn.textContent = 'Shuffled!'; setTimeout(() => { shuffleBtn.innerHTML = '<i class="fas fa-random"></i>'; }, 1000);
         }
 
-        // Speak the word using Web Speech API
         function speakWord(event) {
             event.stopPropagation();
-            if (!('speechSynthesis' in window)) {
-                showModal("Warning", "Speech synthesis is not supported in this browser.");
-                return;
-            }
-
+            if (!('speechSynthesis' in window)) { showModal('Warning', 'Speech synthesis is not supported in this browser.'); return; }
             const currentCard = cardList[currentCardIndex];
             const textToSpeak = isKanjiToEnglishMode ? currentCard.hiragana : currentCard.kanji + ' ' + currentCard.hiragana;
-            
             window.speechSynthesis.cancel();
-            
-            const utterance = new SpeechSynthesisUtterance(textToSpeak);
-            utterance.lang = 'ja-JP';
-
+            const utterance = new SpeechSynthesisUtterance(textToSpeak); utterance.lang = 'ja-JP';
             pronunciationBtn.innerHTML = '<i class="fas fa-volume-up animate-pulse"></i>';
-            utterance.onend = () => {
-                pronunciationBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-            };
-
-            utterance.onerror = (e) => {
-                pronunciationBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-                console.error('Speech synthesis error:', e);
-                showModal("Error", "Speech synthesis failed. This is often a temporary browser issue. Please try again.");
-            };
-
+            utterance.onend = () => { pronunciationBtn.innerHTML = '<i class="fas fa-volume-up"></i>'; };
+            utterance.onerror = (e) => { pronunciationBtn.innerHTML = '<i class="fas fa-volume-up"></i>'; console.error('Speech synthesis error:', e); showModal('Error', 'Speech synthesis failed. This is often a temporary browser issue. Please try again.'); };
             window.speechSynthesis.speak(utterance);
         }
-        
+
         function showModal(title, message) {
             const modal = document.createElement('div');
             modal.className = 'fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50';
-            modal.innerHTML = `
-                <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center">
-                    <h3 class="text-xl font-bold mb-4">${title}</h3>
-                    <p class="text-gray-300">${message}</p>
-                    <button class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg" onclick="this.parentNode.parentNode.remove()">Close</button>
-                </div>
-            `;
+            modal.innerHTML = `<div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center"><h3 class="text-xl font-bold mb-4">${title}</h3><p class="text-gray-300">${message}</p><button class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg" onclick="this.parentNode.parentNode.remove()">Close</button></div>`;
             document.body.appendChild(modal);
         }
 
-        // Main UI Navigation
         function showPasswordScreen() {
             passwordUi.classList.remove('hidden');
             levelSelectionUi.classList.add('hidden');
             studyModeSelectionUi.classList.add('hidden');
             flashcardInputUi.classList.add('hidden');
             flashcardUi.classList.add('hidden');
-            subHeaderTextElement.textContent = "Enter the password to access your study materials.";
+            grammarUi.classList.add('hidden');
+            subHeaderTextElement.textContent = 'Enter the password to access your study materials.';
         }
-
         function showLevelSelection() {
             passwordUi.classList.add('hidden');
             levelSelectionUi.classList.remove('hidden');
             studyModeSelectionUi.classList.add('hidden');
             flashcardInputUi.classList.add('hidden');
             flashcardUi.classList.add('hidden');
-            subHeaderTextElement.textContent = "Choose your proficiency level to begin.";
+            grammarUi.classList.add('hidden');
+            subHeaderTextElement.textContent = 'Choose your proficiency level to begin.';
         }
-
         function showStudyModeSelection() {
             passwordUi.classList.add('hidden');
             levelSelectionUi.classList.add('hidden');
             studyModeSelectionUi.classList.remove('hidden');
             flashcardInputUi.classList.add('hidden');
             flashcardUi.classList.add('hidden');
+            grammarUi.classList.add('hidden');
             subHeaderTextElement.textContent = `You chose ${selectedLevel}. Now, choose a study mode.`;
             selectedLevelElement.textContent = selectedLevel;
         }
-
         function showFlashcardInput() {
             passwordUi.classList.add('hidden');
             levelSelectionUi.classList.add('hidden');
             studyModeSelectionUi.classList.add('hidden');
             flashcardInputUi.classList.remove('hidden');
             flashcardUi.classList.add('hidden');
-            subHeaderTextElement.textContent = `Select a "Day" from the ${selectedLevel} level to start practicing!`;
-            // Check if it's N3, otherwise show coming soon message
-            if (selectedLevel === "N3") {
-                loadSheetData();
-            } else {
-                 showModal("Coming Soon!", `The ${selectedLevel} content is not yet available.`);
-                 flashcardInputUi.classList.add('hidden');
-                 showStudyModeSelection();
-            }
+            grammarUi.classList.add('hidden');
+            subHeaderTextElement.textContent = `Select a \"Day\" from the ${selectedLevel} level to start practicing!`;
+            if (selectedLevel === 'N3') { loadSheetData(); } else { showModal('Coming Soon!', `The ${selectedLevel} content is not yet available.`); flashcardInputUi.classList.add('hidden'); showStudyModeSelection(); }
         }
-        
-        // Event listeners for the new UI
-        passwordBtn.addEventListener('click', () => {
-            if (passwordInput.value === correctPassword) {
-                localStorage.setItem(passwordCacheKey, correctPassword);
-                showLevelSelection();
-            } else {
-                showModal("Incorrect Password", "Please try again.");
-            }
-        });
+        function showGrammarApp() {
+            passwordUi.classList.add('hidden');
+            levelSelectionUi.classList.add('hidden');
+            studyModeSelectionUi.classList.add('hidden');
+            flashcardInputUi.classList.add('hidden');
+            flashcardUi.classList.add('hidden');
+            grammarUi.classList.remove('hidden');
+            subHeaderTextElement.textContent = `JLPT ${selectedLevel} Grammar`;
+            if (selectedLevel === 'N3') { fetchGrammarData(); } else { showModal('Coming Soon!', `The ${selectedLevel} grammar content is not yet available.`); showStudyModeSelection(); }
+        }
 
-        document.querySelectorAll('.level-btn').forEach(button => {
-            button.addEventListener('click', (event) => {
-                selectedLevel = event.target.dataset.level;
-                showStudyModeSelection();
-            });
-        });
-
-        vocabModeBtn.addEventListener('click', () => {
-            showFlashcardInput();
-        });
-
-        grammarModeBtn.addEventListener('click', () => {
-            showModal("Coming Soon!", "The grammar section is not yet available. Please check back later!");
-        });
-
+        passwordBtn.addEventListener('click', () => { if (passwordInput.value === correctPassword) { localStorage.setItem(passwordCacheKey, correctPassword); showLevelSelection(); } else { showModal('Incorrect Password', 'Please try again.'); } });
+        document.querySelectorAll('.level-btn').forEach((button) => { button.addEventListener('click', (event) => { selectedLevel = event.target.dataset.level; showStudyModeSelection(); }); });
+        vocabModeBtn.addEventListener('click', () => { showFlashcardInput(); });
+        grammarModeBtn.addEventListener('click', () => { showGrammarApp(); });
         backToLevelBtn.addEventListener('click', showLevelSelection);
         backToModeBtn.addEventListener('click', showStudyModeSelection);
+        backFromGrammarBtn.addEventListener('click', showStudyModeSelection);
 
-        // Existing Event listeners
         daySelect.addEventListener('change', () => {
-            if (daySelect.value) {
-                generateKanjiToEnglishBtn.classList.remove('hidden');
-                generateEnglishToKanjiBtn.classList.remove('hidden');
-            } else {
-                generateKanjiToEnglishBtn.classList.add('hidden');
-                generateEnglishToKanjiBtn.classList.add('hidden');
-            }
+            if (daySelect.value) { generateKanjiToEnglishBtn.classList.remove('hidden'); generateEnglishToKanjiBtn.classList.remove('hidden'); } else { generateKanjiToEnglishBtn.classList.add('hidden'); generateEnglishToKanjiBtn.classList.add('hidden'); }
         });
-
-        loadBtn.addEventListener('click', () => {
-            loadSheetData();
-        });
-
+        loadBtn.addEventListener('click', () => { loadSheetData(); });
         generateKanjiToEnglishBtn.addEventListener('click', () => generateCards('kanji-to-english'));
         generateEnglishToKanjiBtn.addEventListener('click', () => generateCards('english-to-kanji'));
         flashcardElement.addEventListener('click', flipCard);
@@ -583,6 +407,105 @@
         nextBtn.addEventListener('click', nextCard);
         previousBtn.addEventListener('click', previousCard);
         shuffleBtn.addEventListener('click', shuffleCards);
+
+        // --- Grammar Logic ---
+        async function fetchGrammarData() {
+            grammarLoadingMessageEl.style.display = 'block';
+            grammarLoadingMessageEl.textContent = 'Loading grammar data...';
+            allGrammarData = [];
+            Papa.parse(grammarDataUrl, {
+                download: true,
+                header: false,
+                skipEmptyLines: true,
+                complete: function (results) {
+                    const firstRow = results.data.length > 0 ? results.data[0] : [];
+                    const isHeaderRowPresent = firstRow.length > 0 && String(firstRow[0]).trim().toLowerCase() === 'part 1';
+                    const rowToProcess = isHeaderRowPresent ? (results.data.length > 1 ? results.data[1] : []) : firstRow;
+                    rowToProcess.forEach((cell) => {
+                        const jsonString = cell ? String(cell).trim() : '';
+                        if (jsonString) {
+                            try { const partData = JSON.parse(jsonString); allGrammarData.push(partData); } catch (e) { console.error('Error parsing JSON from cell:', e, 'Cell content:', jsonString); }
+                        }
+                    });
+                    if (allGrammarData.length > 0) { renderGrammarPartSelection(); } else { grammarLoadingMessageEl.textContent = 'Error: No valid grammar data found.'; }
+                },
+                error: function (error) { console.error('Failed to fetch or parse grammar data:', error); grammarLoadingMessageEl.textContent = `Error loading data: ${error.message}`; },
+            });
+        }
+
+        function renderGrammarPartSelection() {
+            grammarLoadingMessageEl.style.display = 'none';
+            grammarPartSelectionEl.innerHTML = '';
+            allGrammarData.forEach((part) => {
+                const button = document.createElement('button');
+                button.textContent = `Part ${part.part}: ${part.title}`;
+                button.className = 'w-full my-2 px-6 py-4 bg-gray-700 text-white font-semibold text-lg rounded-xl shadow-lg hover:bg-gray-800 transition-colors transform hover:scale-105';
+                button.onclick = () => loadGrammarFlashcardSet(part.part);
+                grammarPartSelectionEl.appendChild(button);
+            });
+        }
+
+        function loadGrammarFlashcardSet(partId) {
+            const part = allGrammarData.find((p) => p.part === partId);
+            if (!part) { console.error('No part found with id:', partId); return; }
+            currentGrammarData = part.groups.flatMap((group) => group.items);
+            if (currentGrammarData.length === 0) { grammarLoadingMessageEl.textContent = 'No grammar items found for this part.'; grammarLoadingMessageEl.style.display = 'block'; return; }
+            currentGrammarIndex = 0;
+            grammarPartSelectionEl.style.display = 'none';
+            grammarFlashcardAppEl.style.display = 'block';
+            renderGrammarFlashcard();
+        }
+
+        function renderGrammarFlashcard() {
+            if (currentGrammarData.length === 0) return;
+            const currentItem = currentGrammarData[currentGrammarIndex];
+            const randomExample = currentItem.examples[Math.floor(Math.random() * currentItem.examples.length)];
+
+            // FRONT: English example
+            grammarFrontContentEl.querySelector('p').textContent = randomExample.en;
+
+            // BACK: Japanese details/metrics
+            const strengthTagColor = getStrengthTagColor(currentItem.strength_tag);
+            grammarStrengthTagEl.textContent = currentItem.strength_tag;
+            grammarStrengthTagEl.style.backgroundColor = strengthTagColor;
+
+            const directnessAvg = (currentItem.directness_range.min + currentItem.directness_range.max) / 2;
+            const politenessAvg = (currentItem.politeness_range.min + currentItem.politeness_range.max) / 2;
+            grammarDirectnessBarEl.style.width = `${Math.max(0, Math.min(100, directnessAvg))}%`;
+            grammarPolitenessBarEl.style.width = `${Math.max(0, Math.min(100, politenessAvg))}%`;
+
+            grammarNameEl.textContent = currentItem.name;
+            grammarMeaningEl.textContent = currentItem.meaning;
+            grammarFormEl.textContent = currentItem.form;
+            grammarJapaneseExampleEl.textContent = randomExample.jp;
+            grammarKeyPointEl.textContent = `Key Point: ${currentItem.key_point}`;
+
+            grammarFlashcardEl.classList.remove('is-flipped');
+        }
+
+        function getStrengthTagColor(tag) {
+            switch (tag) {
+                case '⚡ Lively/emotional': return '#ef4444';
+                case '⚡ Neutral': return '#6b7280';
+                case '⚡ Very strong suddenness': return '#f59e0b';
+                case '⚡⚡ Very strong risk': return '#b91c1c';
+                case '⚡ Moderate contrast': return '#8b5cf6';
+                case '⚡ Moderate cause': return '#10b981';
+                default: return '#9ca3af';
+            }
+        }
+
+        grammarFlashcardEl.addEventListener('click', () => { grammarFlashcardEl.classList.toggle('is-flipped'); });
+        grammarNextButtonEl.addEventListener('click', () => { currentGrammarIndex = (currentGrammarIndex + 1) % currentGrammarData.length; renderGrammarFlashcard(); });
+        grammarPrevButtonEl.addEventListener('click', () => { currentGrammarIndex = (currentGrammarIndex - 1 + currentGrammarData.length) % currentGrammarData.length; renderGrammarFlashcard(); });
+        grammarBackButtonEl.addEventListener('click', () => { grammarFlashcardAppEl.style.display = 'none'; grammarPartSelectionEl.style.display = 'block'; });
+
+        // Main UI nav
+        function showPasswordScreen() { passwordUi.classList.remove('hidden'); levelSelectionUi.classList.add('hidden'); studyModeSelectionUi.classList.add('hidden'); flashcardInputUi.classList.add('hidden'); flashcardUi.classList.add('hidden'); grammarUi.classList.add('hidden'); subHeaderTextElement.textContent = 'Enter the password to access your study materials.'; }
+        function showLevelSelection() { passwordUi.classList.add('hidden'); levelSelectionUi.classList.remove('hidden'); studyModeSelectionUi.classList.add('hidden'); flashcardInputUi.classList.add('hidden'); flashcardUi.classList.add('hidden'); grammarUi.classList.add('hidden'); subHeaderTextElement.textContent = 'Choose your proficiency level to begin.'; }
+        function showStudyModeSelection() { passwordUi.classList.add('hidden'); levelSelectionUi.classList.add('hidden'); studyModeSelectionUi.classList.remove('hidden'); flashcardInputUi.classList.add('hidden'); flashcardUi.classList.add('hidden'); grammarUi.classList.add('hidden'); subHeaderTextElement.textContent = `You chose ${selectedLevel}. Now, choose a study mode.`; selectedLevelElement.textContent = selectedLevel; }
+        function showFlashcardInput() { passwordUi.classList.add('hidden'); levelSelectionUi.classList.add('hidden'); studyModeSelectionUi.classList.add('hidden'); flashcardInputUi.classList.remove('hidden'); flashcardUi.classList.add('hidden'); grammarUi.classList.add('hidden'); subHeaderTextElement.textContent = `Select a \"Day\" from the ${selectedLevel} level to start practicing!`; if (selectedLevel === 'N3') { loadSheetData(); } else { showModal('Coming Soon!', `The ${selectedLevel} content is not yet available.`); flashcardInputUi.classList.add('hidden'); showStudyModeSelection(); } }
+        function showGrammarApp() { passwordUi.classList.add('hidden'); levelSelectionUi.classList.add('hidden'); studyModeSelectionUi.classList.add('hidden'); flashcardInputUi.classList.add('hidden'); flashcardUi.classList.add('hidden'); grammarUi.classList.remove('hidden'); subHeaderTextElement.textContent = `JLPT ${selectedLevel} Grammar`; if (selectedLevel === 'N3') { fetchGrammarData(); } else { showModal('Coming Soon!', `The ${selectedLevel} grammar content is not yet available.`); showStudyModeSelection(); } }
     </script>
 </body>
 </html>
