@@ -1,0 +1,8 @@
+{
+  "firestore": {
+    "database": "(default)",
+    "location": "asia-northeast2",
+    "rules": "users/{uid}/meta/profile",
+    "indexes": "firestore.indexes.json"
+  }
+}

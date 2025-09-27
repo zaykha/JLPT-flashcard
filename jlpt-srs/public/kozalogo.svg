@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Koza pagoda logo">
+  <defs>
+    <!-- Gold gradient (edit stops to match your brand) -->
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0"  stop-color="#C3922E"/>
+      <stop offset="1"  stop-color="#E1BD67"/>
+    </linearGradient>
+    <!-- For a single color instead, set fill="currentColor" on .gold below -->
+    <style>
+      .gold{ fill:url(#gold); }
+      .ring{ fill:none; stroke:url(#gold); stroke-width:34; stroke-linecap:round; }
+    </style>
+  </defs>
+
+  <!-- Enso-style ring -->
+  <circle class="ring" cx="256" cy="256" r="206" stroke-dasharray="1220 140" stroke-dashoffset="30"/>
+
+  <!-- Pagoda -->
+  <g class="gold">
+    <!-- top finial -->
+    <rect x="246" y="132" width="20" height="14" rx="2"/>
+    <!-- roof 1 -->
+    <path d="M166 172h180l-18 18H184z"/>
+    <!-- tier 1 body -->
+    <rect x="206" y="190" width="100" height="36" rx="4"/>
+    <!-- roof 2 (wider) -->
+    <path d="M124 244h264l-24 22H148z"/>
+    <!-- tier 2 body -->
+    <rect x="186" y="268" width="140" height="42" rx="6"/>
+    <!-- roof 3 (base) -->
+    <path d="M92 326h328l-30 28H122z"/>
+    <!-- base plinth -->
+    <path d="M150 360h212v40H150z"/>
+    <!-- lower steps -->
+    <path d="M116 404h280v26H116z"/>
+  </g>
+</svg>
