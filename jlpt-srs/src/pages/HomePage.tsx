@@ -29,6 +29,20 @@ const Screen = styled.div`
     padding: 4px 1px 12px;
   }
 `;
+const IconBtn = styled.button`
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  border: 2px solid #000;
+  background: #fff;
+  cursor: pointer;
+  transition: transform .1s ease;
+  &:hover { transform: translateY(-1px); }
+`;
+
+const HeaderActions = styled.div`
+  display: flex; gap: 8px; align-items: center;
+`;
 
 const TileOverlay = styled.div`
   position: absolute; inset: 0;
@@ -401,7 +415,18 @@ const PromoModal: React.FC<PromoModalProps> = ({ open, onClose, imgSrc, title, c
             <Greeting>Hi, {profile.nickname}</Greeting>
             <Sub>Vocab {profile.vocabLevel} • Grammar {profile.grammarLevel} • Pace {profile.pace}/day</Sub>
           </TitleWrap>
-          <SignOut onClick={signOutUser}>Sign out</SignOut>
+          <HeaderActions>
+            <IconBtn onClick={() => nav('/settings')} aria-label="Settings">
+              {/* simple gear svg */}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                  strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V22a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H2a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0A1.65 1.65 0 0 0 9 2.09V2a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0A1.65 1.65 0 0 0 21.91 11H22a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
+              </svg>
+            </IconBtn>
+            <SignOut onClick={signOutUser}>Sign out</SignOut>
+          </HeaderActions>
+
         </HeaderBar>
 
         <Content>
@@ -451,7 +476,7 @@ const PromoModal: React.FC<PromoModalProps> = ({ open, onClose, imgSrc, title, c
 
           <Actions>
             <ActionBtn onClick={() => nav('/flashcards')} variant="primary">Study Vocabulary</ActionBtn>
-            <ActionBtn onClick={() => nav('/study')} variant="secondary">Study Grammar</ActionBtn>
+            <ActionBtn disabled onClick={() => nav('/study')} variant="secondary">Study Grammar</ActionBtn>
           </Actions>
         </Content>
       </Panel>

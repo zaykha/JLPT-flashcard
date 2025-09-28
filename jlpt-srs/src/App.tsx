@@ -17,6 +17,7 @@ import { HomePage } from '@/pages/HomePage';
 import { StudySettings } from '@/pages/StudySettings';
 import { FlashcardsPage } from '@/pages/FlashcardsPage';
 import { QuizPage } from '@/pages/QuizPage';
+import { SettingsPage } from '@/pages/SettingsPage';
 
 function Protected({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -72,7 +73,7 @@ export default function App() {
         <Route path="/" element={<Protected><RequireProfile><HomePage/></RequireProfile></Protected>} />
         <Route path="/flashcards" element={<Protected><RequireProfile><FlashcardsPage/></RequireProfile></Protected>} />
         <Route path="/quiz" element={<Protected><RequireProfile><QuizPage/></RequireProfile></Protected>} />
-
+        <Route path="/settings" element={<SettingsPage />} />
         {/* keep StudySettings for grammar placeholder or remove if not needed */}
         <Route path="/study" element={<Protected><RequireProfile><StudySettings/></RequireProfile></Protected>} />
 

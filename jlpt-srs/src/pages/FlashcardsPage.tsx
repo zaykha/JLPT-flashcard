@@ -200,6 +200,7 @@ export const FlashcardsPage: React.FC = () => {
   const prev = useSession(s => s.prev);
   const setStage = useSession(s => s.setStage);
   const buildTodayFixed = useSession(s => s.buildTodayFixed);
+  const nav = useNavigate();
 
   const [flipped, setFlipped] = useState(false);
   const [mode, setMode] = useState<'kanji-to-english' | 'english-to-kanji'>('kanji-to-english');
@@ -253,6 +254,7 @@ export const FlashcardsPage: React.FC = () => {
       <TileOverlay />
       <Panel>
         <Header>
+        <Btn variant="secondary" onClick={() => nav(-1)}>← Back</Btn>
           <Title>Flashcards</Title>
           {/* You can put a tiny sprite/icon here later if you want */}
         </Header>
