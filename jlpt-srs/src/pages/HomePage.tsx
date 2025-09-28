@@ -5,8 +5,8 @@ import { getProfile, type UserProfile } from '@/lib/user-data';
 import { useNavigate } from 'react-router-dom';
 import { useTopics } from '@/store/topics';
 import { useSRS } from '@/store/srs';
-import HOME_BG from "@/assets/HomePage/homepagebg4.jpg";
-import Promo from "@/assets/promo/coming-soon.png";
+// import HOME_BG from "@/assets/HomePage/homepagebg4.jpg";
+// import Promo from "@/assets/promo/coming-soon.png";
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { TopicIcon } from '@/components/ui/TopicIcon';
 import { useIsMobile } from '@/hooks/useIsMobile';
@@ -19,7 +19,7 @@ const Screen = styled.div`
   place-items: center;
   padding: 32px 16px;
   background:
-    url(${HOME_BG}) center/cover no-repeat,
+    url(/homepagebg4.jpg) center/cover no-repeat,
     radial-gradient(1200px 600px at 20% -10%, rgba(111,126,79,.35), transparent 60%),
     radial-gradient(900px 500px at 120% 110%, rgba(139,107,63,.25), transparent 65%),
     #0b0f14;
@@ -397,7 +397,7 @@ const PromoModal: React.FC<PromoModalProps> = ({ open, onClose, imgSrc, title, c
           open={promoOpen}
           onClose={() => setPromoOpen(false)}
           title="New Quest Arrives Soon!"
-          imgSrc={Promo}
+          imgSrc={'/coming-soon.png'}
           ctaText="Follow Dev Updates"
           ctaHref="https://example.com/your-x-or-discord"
         />
@@ -486,7 +486,7 @@ const PromoModal: React.FC<PromoModalProps> = ({ open, onClose, imgSrc, title, c
         open={promoOpen}
         onClose={() => setPromoOpen(false)}
         title="New Quest Arrives Soon!"
-        imgSrc={Promo}   /* drop your image here */
+        imgSrc={'/coming-soon.png'}   /* drop your image here */
         ctaText="Follow Dev Updates"
         ctaHref="https://example.com/your-x-or-discord"
       />

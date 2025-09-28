@@ -2,24 +2,24 @@ import React from 'react';
 import { useAuth } from '@/store/auth';
 import { Navigate } from 'react-router-dom';
 import styled from "styled-components";
-import kozalogin from "@/assets/Loginpage/kozalogin.png";
-import kozalogin1 from "@/assets/Loginpage/kozalogin1.png";
-import logincardbg from "@/assets/Loginpage/logincardbg.png";
-import logo from "@/assets/Logos/kozaLogo1.png";
+// import kozalogin from "@/assets/Loginpage/kozalogin.png";
+// import kozalogin1 from "@/assets/Loginpage/kozalogin1.png";
+// import logincardbg from "@/assets/Loginpage/logincardbg.png";
+// import logo from "@/assets/Logos/kozaLogo1.png";
 
 /** ======= Layout ======= */
 const Screen = styled.div`
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background: url(${kozalogin}) center/cover no-repeat fixed;
+  background: url(/kozalogin.png) center/cover no-repeat fixed;
   position: relative;
   padding: 24px 12px; /* breathing room on small screens */
 
   @media (max-width: 520px) {
   min-height: 100%;
     padding: 10px 10px;
-    background: url(${kozalogin1}) center/cover no-repeat fixed;
+    background: url(/kozalogin1.png) center/cover no-repeat fixed;
 
 `;
 
@@ -41,7 +41,7 @@ const Sheet = styled.div`
     content: "";
     position: absolute;
     inset: -160px;
-    background: url(${logincardbg}) center/cover no-repeat;
+    background: url(/logincardbg.png) center/cover no-repeat;
     z-index: -1;
     pointer-events: none;
     border-radius: 4px;
@@ -251,7 +251,7 @@ export const LoginPage: React.FC = () => {
       <Backdrop />
       <Sheet>
         <Brand>
-          <Logo src={logo} alt="Koza World" />
+          <Logo src={'/kozaLogo1.png'} alt="Koza World" />
           <Title>KOZA World</Title>
           <Subtitle>Take your Japanese to the next level.</Subtitle>
         </Brand>
