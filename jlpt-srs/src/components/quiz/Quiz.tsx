@@ -1,5 +1,5 @@
 // TODO: Quiz root
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import type { QuizQuestionModel } from '@/types/vocab';
 import { QuizQuestion } from './QuizQuestion';
 

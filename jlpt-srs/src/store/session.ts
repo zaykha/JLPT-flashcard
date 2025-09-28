@@ -21,7 +21,7 @@ type SessionState = {
   buildTodayFixed: () => Promise<void>;
 };
 
-export const useSession = create<SessionState>((set, get) => ({
+export const useSession = create<SessionState>((set) => ({
   stage: 'settings',
   today: [],
   index: 0,
@@ -67,7 +67,7 @@ export const useSession = create<SessionState>((set, get) => ({
 
     // 30% due (rounded), rest new
     const dueTarget = Math.max(0, Math.floor(pace * 0.3));
-    const newTarget = Math.max(0, pace - dueTarget);
+    // const newTarget = Math.max(0, pace - dueTarget);
 
     // helpers
     const pick = (arr: Word[], n: number) => arr.slice(0, Math.min(n, arr.length));

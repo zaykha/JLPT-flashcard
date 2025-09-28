@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { useAuth } from '@/store/auth';
 import { getProfile, type UserProfile } from '@/lib/user-data';
 import { useNavigate } from 'react-router-dom';
@@ -7,10 +7,10 @@ import { useTopics } from '@/store/topics';
 import { useSRS } from '@/store/srs';
 import HOME_BG from "@/assets/HomePage/homepagebg4.jpg";
 import Promo from "@/assets/promo/coming-soon.png";
-import { ProgressBar, type ProgressSegment } from '@/components/ui/ProgressBar';
+import { ProgressBar } from '@/components/ui/ProgressBar';
 import { TopicIcon } from '@/components/ui/TopicIcon';
 import { useIsMobile } from '@/hooks/useIsMobile';
-import { normalizeTopicKey, type Topic, type SRSCard } from '@/types/vocab';
+import { normalizeTopicKey } from '@/types/vocab';
 
 /** ——— layout + styling ——— */
 const Screen = styled.div`
@@ -288,9 +288,9 @@ const progressMap = React.useMemo(
   }, [user, nav]);
 
   // compute stats (keep hooks order stable)
-  const learned = Object.keys(srsMap).length;
-  const total = groups.reduce((a, g) => a + g.items.length, 0);
-  const pct = total === 0 ? 0 : Math.min(100, Math.round((learned / total) * 100));
+  // const learned = Object.keys(srsMap).length;
+  // const total = groups.reduce((a, g) => a + g.items.length, 0);
+  // const pct = total === 0 ? 0 : Math.min(100, Math.round((learned / total) * 100));
 
   if (!user) return null;
 

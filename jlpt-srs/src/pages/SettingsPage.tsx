@@ -196,92 +196,92 @@ const Sprite = styled.div`
 `;
 
 /** ——— Promo Modal ——— */
-type PromoModalProps = {
-  open: boolean;
-  onClose: () => void;
-  imgSrc?: string;          // drop any URL or imported asset
-  title?: string;
-  ctaText?: string;
-  ctaHref?: string;
-};
+// type PromoModalProps = {
+//   open: boolean;
+//   onClose: () => void;
+//   imgSrc?: string;          // drop any URL or imported asset
+//   title?: string;
+//   ctaText?: string;
+//   ctaHref?: string;
+// };
 
-const Backdrop = styled.div<{ open: boolean }>`
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.65);
-  display: ${({ open }) => (open ? 'grid' : 'none')};
-  place-items: center;
-  z-index: 50;
-`;
+// const Backdrop = styled.div<{ open: boolean }>`
+//   position: fixed; inset: 0;
+//   background: rgba(0,0,0,.65);
+//   display: ${({ open }) => (open ? 'grid' : 'none')};
+//   place-items: center;
+//   z-index: 50;
+// `;
 
-const Modal = styled.div`
-  position: relative;
-  width: min(640px, 92vw);
-  background: ${({ theme }) => theme.colors.sheetBg};
-  border: 2px solid #000;
-  border-radius: 18px;
-  box-shadow: 0 10px 24px rgba(0,0,0,.45);
-  overflow: hidden;
-`;
+// const Modal = styled.div`
+//   position: relative;
+//   width: min(640px, 92vw);
+//   background: ${({ theme }) => theme.colors.sheetBg};
+//   border: 2px solid #000;
+//   border-radius: 18px;
+//   box-shadow: 0 10px 24px rgba(0,0,0,.45);
+//   overflow: hidden;
+// `;
 
-const ModalHeader = styled.div`
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 12px 0 12px;
-`;
+// const ModalHeader = styled.div`
+//   display: flex; align-items: center; gap: 12px;
+//   padding: 12px 12px 0 12px;
+// `;
 
-const Close = styled.button`
-  position: absolute;
-  left: 8px; top: 8px;
-  width: 36px; height: 36px;
-  border-radius: 10px;
-  border: 2px solid #000;
-  background: #fff;
-  font-family: ${({ theme }) => theme.fonts.heading};
-  font-size: 14px;
-  line-height: 1;
-  cursor: pointer;
-  &:hover { transform: translateY(-1px); }
-`;
+// const Close = styled.button`
+//   position: absolute;
+//   left: 8px; top: 8px;
+//   width: 36px; height: 36px;
+//   border-radius: 10px;
+//   border: 2px solid #000;
+//   background: #fff;
+//   font-family: ${({ theme }) => theme.fonts.heading};
+//   font-size: 14px;
+//   line-height: 1;
+//   cursor: pointer;
+//   &:hover { transform: translateY(-1px); }
+// `;
 
-const ModalTitle = styled.h3`
-  width: 100%;
-  text-align: center;
-  padding: 8px 32px;
-  margin: 0;
-  font-family: ${({ theme }) => theme.fonts.heading};
-  color: ${({ theme }) => theme.colors.primary};
-  font-size: 16px;
-`;
+// const ModalTitle = styled.h3`
+//   width: 100%;
+//   text-align: center;
+//   padding: 8px 32px;
+//   margin: 0;
+//   font-family: ${({ theme }) => theme.fonts.heading};
+//   color: ${({ theme }) => theme.colors.primary};
+//   font-size: 16px;
+// `;
 
-const ModalBody = styled.div`
-  padding: 12px;
-  display: grid;
-  gap: 12px;
-`;
+// const ModalBody = styled.div`
+//   padding: 12px;
+//   display: grid;
+//   gap: 12px;
+// `;
 
-const PromoImg = styled.img`
-  width: 100%;
-  display: block;
-  border-top: 2px solid #000;
-  border-bottom: 2px solid #000;
-  max-height: 70vh;
-  object-fit: cover;
-  image-rendering: auto;
-`;
+// const PromoImg = styled.img`
+//   width: 100%;
+//   display: block;
+//   border-top: 2px solid #000;
+//   border-bottom: 2px solid #000;
+//   max-height: 70vh;
+//   object-fit: cover;
+//   image-rendering: auto;
+// `;
 
-const CTA = styled.a`
-  margin: 0 auto 12px;
-  display: inline-block;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 2px solid #000;
-  background: ${({ theme }) => theme.gradient.emeraldCyan};
-  color: #fff;
-  text-decoration: none;
-  font-family: ${({ theme }) => theme.fonts.heading};
-  font-size: 12px;
-  letter-spacing: .6px;
-  text-transform: uppercase;
-`;
+// const CTA = styled.a`
+//   margin: 0 auto 12px;
+//   display: inline-block;
+//   padding: 10px 14px;
+//   border-radius: 12px;
+//   border: 2px solid #000;
+//   background: ${({ theme }) => theme.gradient.emeraldCyan};
+//   color: #fff;
+//   text-decoration: none;
+//   font-family: ${({ theme }) => theme.fonts.heading};
+//   font-size: 12px;
+//   letter-spacing: .6px;
+//   text-transform: uppercase;
+// `;
 export const SettingsPage: React.FC = () => {
   const { user } = useAuth();
   const nav = useNavigate();

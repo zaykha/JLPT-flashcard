@@ -11,10 +11,10 @@ type Props = {
 };
 
 // simple 20x20 icons, consistent strokes
-const S = 20;
+// const S = 20;
 const st = (color?:string) => ({ fill:'none', stroke: color || 'currentColor', strokeWidth: 1.6, strokeLinecap:'round', strokeLinejoin:'round' } as const);
 
-export const TopicIcon: React.FC<Props> = ({ name, size=18, stroke, fill, style, className }) => {
+export const TopicIcon: React.FC<Props> = ({ name, size=18, stroke, style, className }) => {
   const c = stroke || 'currentColor';
 
   switch (name) {

@@ -14,7 +14,7 @@ type SRSState = {
   flush: () => Promise<void>;
 };
 
-let dirty = false;
+// let dirty = false;
 let flushTimer: any = null;
 
 export const useSRS = create<SRSState>((set, get) => ({
@@ -58,12 +58,12 @@ export const useSRS = create<SRSState>((set, get) => ({
     if (!uid) return;
     const map = get().map;
     await saveSrsMap(uid, map);
-    dirty = false;
+    // dirty = false;
   },
 }));
 
 function scheduleFlush() {
-  dirty = true;
+  // dirty = true;
   if (flushTimer) clearTimeout(flushTimer);
   // debounce writes to Firestore
   flushTimer = setTimeout(() => {

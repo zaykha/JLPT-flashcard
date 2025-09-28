@@ -244,7 +244,7 @@ const AppleIcon = () => (
 
 
 export const LoginPage: React.FC = () => {
-  const { user, signInGoogle, loading } = useAuth();
+  const { user, signInGoogle } = useAuth();
   if (user) return <Navigate to="/" replace />;
   return (
     <Screen>

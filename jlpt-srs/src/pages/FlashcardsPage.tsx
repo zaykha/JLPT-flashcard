@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { useSession } from '@/store/session';
 import { Flashcard } from '@/components/flashcards/Flashcard';
 import { SpeechButton } from '@/components/flashcards/SpeechButton';
@@ -7,11 +7,11 @@ import { useNavigate } from 'react-router-dom';
 import flashcardbg from "@/assets/LoginPage/kozaloginmobile.png";
 
 /** ====== Animations / Layout ====== */
-const float = keyframes`
-  0% { transform: translateY(0) }
-  50% { transform: translateY(-4px) }
-  100% { transform: translateY(0) }
-`;
+// const float = keyframes`
+//   0% { transform: translateY(0) }
+//   50% { transform: translateY(-4px) }
+//   100% { transform: translateY(0) }
+// `;
 
 const Screen = styled.div`
   min-height: 100svh;
@@ -73,20 +73,20 @@ const Stage = styled.div`
   justify-items: center;
 `;
 
-const CardFrame = styled.div`
-  width: min(680px, 96%);
-  border: 2px solid #000;
-  border-radius: 16px;
-  background: #ffffff;
-  padding: 10px;
-  box-shadow: 6px 6px 0 #000;  /* pixel offset */
-  animation: ${float} 6s ease-in-out infinite;
+// const CardFrame = styled.div`
+//   width: min(680px, 96%);
+//   border: 2px solid #000;
+//   border-radius: 16px;
+//   background: #ffffff;
+//   padding: 10px;
+//   box-shadow: 6px 6px 0 #000;  /* pixel offset */
+//   animation: ${float} 6s ease-in-out infinite;
 
-  @media (max-width: 520px) {
-    padding: 8px;
-    box-shadow: 4px 4px 0 #000;
-  }
-`;
+//   @media (max-width: 520px) {
+//     padding: 8px;
+//     box-shadow: 4px 4px 0 #000;
+//   }
+// `;
 
 /** ====== HUD / Progress ====== */
 const Hud = styled.div`
@@ -155,42 +155,42 @@ const Btn = styled.button<{variant?: 'primary'|'secondary'|'ghost'}>`
   }
 `;
 
-const ModeWrap = styled.div`
-  margin-top: 8px;
-  display: grid;
-  gap: 6px;
-  justify-items: center;
-`;
+// const ModeWrap = styled.div`
+//   margin-top: 8px;
+//   display: grid;
+//   gap: 6px;
+//   justify-items: center;
+// `;
 
-const ModeLabel = styled.div`
-  font-family: ${({ theme }) => theme.fonts.body};
-  font-size: clamp(11px, 3vw, 12px);
-  color: ${({ theme }) => theme.colors.textMuted};
-`;
+// const ModeLabel = styled.div`
+//   font-family: ${({ theme }) => theme.fonts.body};
+//   font-size: clamp(11px, 3vw, 12px);
+//   color: ${({ theme }) => theme.colors.textMuted};
+// `;
 
-const ModeChips = styled.div`
-  display: grid;
-  grid-auto-flow: column;
-  gap: 8px;
-`;
+// const ModeChips = styled.div`
+//   display: grid;
+//   grid-auto-flow: column;
+//   gap: 8px;
+// `;
 
-const Chip = styled.button<{active?: boolean}>`
-  padding: 8px 10px;
-  border-radius: 12px;
-  border: 2px solid #000;
-  font-family: ${({ theme }) => theme.fonts.body};
-  font-size: clamp(11px, 3vw, 12px);
-  letter-spacing: .02em;
-  cursor: pointer;
+// const Chip = styled.button<{active?: boolean}>`
+//   padding: 8px 10px;
+//   border-radius: 12px;
+//   border: 2px solid #000;
+//   font-family: ${({ theme }) => theme.fonts.body};
+//   font-size: clamp(11px, 3vw, 12px);
+//   letter-spacing: .02em;
+//   cursor: pointer;
 
-  color: ${({ active, theme }) => active ? '#fff' : theme.colors.text};
-  background: ${({ active, theme }) => active ? theme.colors.secondary : '#fff'};
-  box-shadow: 3px 3px 0 #000;
+//   color: ${({ active, theme }) => active ? '#fff' : theme.colors.text};
+//   background: ${({ active, theme }) => active ? theme.colors.secondary : '#fff'};
+//   box-shadow: 3px 3px 0 #000;
 
-  transition: transform .1s ease, box-shadow .1s ease, background .15s ease;
-  &:hover { transform: translateY(-1px); }
-  &:active { transform: translate(3px,3px); box-shadow: 0 0 0 #000; }
-`;
+//   transition: transform .1s ease, box-shadow .1s ease, background .15s ease;
+//   &:hover { transform: translateY(-1px); }
+//   &:active { transform: translate(3px,3px); box-shadow: 0 0 0 #000; }
+// `;
 
 /** ====== Component ====== */
 export const FlashcardsPage: React.FC = () => {
@@ -203,7 +203,7 @@ export const FlashcardsPage: React.FC = () => {
   const nav = useNavigate();
 
   const [flipped, setFlipped] = useState(false);
-  const [mode, setMode] = useState<'kanji-to-english' | 'english-to-kanji'>('kanji-to-english');
+  const [mode] = useState<'kanji-to-english' | 'english-to-kanji'>('kanji-to-english');
 
   useEffect(() => { (async () => {
     if (!today.length) await buildTodayFixed();
