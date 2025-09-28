@@ -10,6 +10,7 @@ import Promo from "@/assets/promo/coming-soon.png";
 import { ProgressBar, type ProgressSegment } from '@/components/ui/ProgressBar';
 import { TopicIcon } from '@/components/ui/TopicIcon';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { normalizeTopicKey, type Topic, type SRSCard } from '@/types/vocab';
 
 /** ——— layout + styling ——— */
 const Screen = styled.div`
@@ -289,25 +290,48 @@ type PromoModalProps = {
   ctaText?: string;
   ctaHref?: string;
 };
-function toSegments(buckets: {
+type TopicBuckets = {
   newCount: number;
   dueCount: number;
   futureCount: number;
-  byStep: Record<string, number>;
-}): ProgressSegment[] {
-  const segs: ProgressSegment[] = [
+  byStep: Record<number, number>;
+};
+// function toSegments(buckets: {
+//   newCount: number;
+//   dueCount: number;
+//   futureCount: number;
+//   byStep: Record<string, number>;
+// }): ProgressSegment[] {
+//   const segs: ProgressSegment[] = [
+//     { key: 'new',    label: 'New',    count: buckets.newCount },
+//     { key: 'due',    label: 'Due',    count: buckets.dueCount },
+//     { key: 'future', label: 'Queued', count: buckets.futureCount },
+//   ];
+
+//   // include spaced-repetition steps as s0..s4 (if present)
+//   const keys = Object.keys(buckets.byStep || {});
+//   keys.sort(); // s0, s1, ...
+//   for (const k of keys) {
+//     const c = buckets.byStep[k] || 0;
+//     if (c > 0) segs.push({ key: k, label: k.toUpperCase(), count: c });
+//   }
+//   return segs;
+// }
+function toSegments(buckets: TopicBuckets) {
+  const segs: import('@/components/ui/ProgressBar').ProgressSegment[] = [
     { key: 'new',    label: 'New',    count: buckets.newCount },
     { key: 'due',    label: 'Due',    count: buckets.dueCount },
     { key: 'future', label: 'Queued', count: buckets.futureCount },
   ];
 
-  // include spaced-repetition steps as s0..s4 (if present)
-  const keys = Object.keys(buckets.byStep || {});
-  keys.sort(); // s0, s1, ...
-  for (const k of keys) {
-    const c = buckets.byStep[k] || 0;
-    if (c > 0) segs.push({ key: k, label: k.toUpperCase(), count: c });
+  // Convert numeric steps to 's0', 's1', ... for the ProgressBar color map
+  const stepEntries = Object.entries(buckets.byStep); // [ '0', 12 ] etc.
+  stepEntries.sort((a, b) => Number(a[0]) - Number(b[0]));
+  for (const [stepStr, count] of stepEntries) {
+    const stepNum = Number(stepStr);
+    if (count > 0) segs.push({ key: `s${stepNum}`, label: `S${stepNum}`, count });
   }
+
   return segs;
 }
 const resolveImgSrc = (img?: ImgLike) =>
@@ -385,7 +409,15 @@ const PromoModal: React.FC<PromoModalProps> = ({ open, onClose, imgSrc, title, c
           <CardTitle>Progress by Topic</CardTitle>
           <TopicList>
             {groups.map(g => {
-              const buckets = progressMap[g.key] ?? { newCount: g.items.length, dueCount: 0, futureCount: 0, byStep: {} };
+              // const buckets = progressMap[g.key] ?? { newCount: g.items.length, dueCount: 0, futureCount: 0, byStep: {} };
+              const tKey = normalizeTopicKey(g.key);
+              const buckets = progressMap[tKey] ?? {
+                newCount: g.items.length,
+                dueCount: 0,
+                futureCount: 0,
+                byStep: {},
+              };
+
               const segments = toSegments(buckets);
               const totalForTopic = segments.reduce((a, s) => a + s.count, 0);
 

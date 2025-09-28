@@ -2,7 +2,8 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { kvGet, kvSet, KEYS } from '@/lib/storage';
-import type { TopicGroup, Word, TopicKey, ProgressBuckets, SRSCard } from '@/types/vocab';
+import type { TopicGroup, Word, Topic, TopicKey, ProgressBuckets, SRSCard } from '@/types/vocab';
+import { TOPICS, normalizeTopicKey } from '@/types/vocab';
 
 type TopicsState = {
   hydrated: boolean;
@@ -24,7 +25,7 @@ type TopicsState = {
   setGroups(groups: TopicGroup[]): void;
 
   // compute progress for each topic from SRS map
-  progressByTopic(srsMap: Record<string, SRSCard>): Record<TopicKey, ProgressBuckets>;
+  progressByTopic(srsMap: Record<string, SRSCard>): Record<Topic, ProgressBuckets>;
 };
 
 export const useTopics = create<TopicsState>()(
@@ -76,29 +77,31 @@ export const useTopics = create<TopicsState>()(
     },
 
     progressByTopic(srsMap) {
-      const out: Record<TopicKey, ProgressBuckets> = {};
-      const byTopic = get().groups;
-
-      byTopic.forEach(g => {
-        const buckets: ProgressBuckets = {
-          newCount: 0,
-          dueCount: 0,
-          futureCount: 0,
-          byStep: {},
-        };
-
-        g.items.forEach(w => {
+      // Seed an entry for every canonical Topic so the result always satisfies the type
+      const out = Object.fromEntries(
+        TOPICS.map(t => [t, { newCount: 0, dueCount: 0, futureCount: 0, byStep: {} as Record<number, number> }])
+      ) as Record<Topic, ProgressBuckets>;
+    
+      const groups = get().groups;
+    
+      const now = Date.now();
+      for (const g of groups) {
+        const t = normalizeTopicKey(g.key);          // coerce legacy keys → canonical Topic
+        const buckets = out[t];
+    
+        for (const w of g.items) {
           const s = srsMap[w.id];
-          if (!s) { buckets.newCount++; return; }
-          const now = Date.now();
+          if (!s) {
+            buckets.newCount++;
+            continue;
+          }
           if (s.next <= now) buckets.dueCount++; else buckets.futureCount++;
           buckets.byStep[s.step] = (buckets.byStep[s.step] ?? 0) + 1;
-        });
-
-        out[g.key] = buckets;
-      });
-
+        }
+      }
+    
       return out;
     },
+    
   }))
 );

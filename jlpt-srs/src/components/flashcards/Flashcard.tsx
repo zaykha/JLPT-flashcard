@@ -96,6 +96,7 @@ const topicBg = (topic: Topic | undefined, theme: any) =>
   .back {
     ${({ theme }) => css`
       background: ${theme.gradient.green};
+      // background: #;
       color: #f0fdf4;
     `}
     transform: rotateY(180deg);

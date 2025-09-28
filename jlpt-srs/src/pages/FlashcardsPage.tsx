@@ -4,6 +4,7 @@ import { useSession } from '@/store/session';
 import { Flashcard } from '@/components/flashcards/Flashcard';
 import { SpeechButton } from '@/components/flashcards/SpeechButton';
 import { useNavigate } from 'react-router-dom';
+import flashcardbg from "@/assets/LoginPage/kozaloginmobile.png";
 
 /** ====== Animations / Layout ====== */
 const float = keyframes`
@@ -18,6 +19,7 @@ const Screen = styled.div`
   place-items: center;
   padding: 24px 12px;
   background:
+    url(${flashcardbg}) center/cover no-repeat,
     radial-gradient(1200px 600px at 20% -10%, rgba(111,126,79,.35), transparent 60%),
     radial-gradient(900px 500px at 120% 110%, rgba(139,107,63,.25), transparent 65%),
     #0b0f14;
@@ -36,7 +38,8 @@ const TileOverlay = styled.div`
 
 const Panel = styled.section`
   width: min(860px, 100%);
-  background: ${({ theme }) => theme.colors.sheetBg};
+  // background: ${({ theme }) => theme.colors.sheetBg};
+  
   border: 2px solid #000;
   border-radius: 16px;
   box-shadow: 0 2px 0 #000, 0 8px 0 rgba(0,0,0,.35), ${({ theme }) => theme.shadow.card};
@@ -52,7 +55,7 @@ const Header = styled.div`
 
 const Title = styled.div`
   font-family: ${({ theme }) => theme.fonts.heading};
-  color: ${({ theme }) => theme.colors.primary};
+  color:#fff;
   font-size: clamp(14px, 3.6vw, 18px);
   letter-spacing: .5px;
 `;
