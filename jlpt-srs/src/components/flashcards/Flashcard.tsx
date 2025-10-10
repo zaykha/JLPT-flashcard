@@ -1,12 +1,11 @@
 
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { normalizeTopicKey, type Word } from '@/types/vocab';
-import type { Topic } from '@/types/vocab';
+import type { Topic, Word } from '@/types/vocab';
 
 // Helper to resolve topic background
-const topicBg = (topic: Topic | undefined, theme: any) =>
-  (topic && theme.topicGradients?.[topic]) || theme.gradient.slate;
+// const topicBg = (topic: Topic | undefined, theme: any) =>
+//   (topic && theme.topicGradients?.[topic]) || theme.gradient.slate;
   const Card = styled.div<{ flipped: boolean; $topic?: Topic }>`
   perspective: 1000px;
   width: 100%;
@@ -80,7 +79,7 @@ const topicBg = (topic: Topic | undefined, theme: any) =>
 
   .front {
     ${({ $topic, theme }) => css`
-      background: ${topicBg($topic, theme)};
+      background: ${$topic ? theme.topicGradients[$topic] : theme.gradient.slate};
       color: #f3f4f6;
     `}
     font-family: ${({ theme }) => theme.fonts.heading};
@@ -136,20 +135,26 @@ type Props = {
 };
 
 export const Flashcard: React.FC<Props> = ({ word, flipped, onFlip, mode }) => {
- 
-  const activeTopic = normalizeTopicKey(word.topicKey); // <- canonical Topic now
+  const activeTopic = (word.topicKey as any) || 'default';
+
+  const frontJP =
+   (word.kanji && word.kanji.trim()) ||
+   (word.hiragana && word.hiragana.trim()) ||
+   (word.romaji && word.romaji.trim()) ||
+   '—';
+  const backHira = (word.hiragana && word.hiragana.trim()) || '';
+  const backKanji = (word.kanji && word.kanji.trim()) || '';
+  const backEng = (word.english && String(word.english).trim()) || '';
+  const front = mode === 'kanji-to-english' ? frontJP : (backEng || '—');
+
   return (
     <Card flipped={flipped} onClick={onFlip} $topic={activeTopic} data-topic={activeTopic}>
       <div className="inner">
-        <div className="face front">
-          {mode === 'kanji-to-english' ? (word.kanji || word.hiragana) : word.english}
-        </div>
+        <div className="face front">{front}</div>
         <div className="face back">
-          <>
-            <div className="hiragana">{word.hiragana}</div>
-            <div className="kanji">{word.kanji}</div>
-            <div className="english">{word.english}</div>
-          </>
+          {backHira ? <div className="hiragana">{backHira}</div> : null}
+          {backKanji ? <div className="kanji">{backKanji}</div> : null}
+          <div className="english">{backEng}</div>
         </div>
       </div>
     </Card>

@@ -17,4 +17,9 @@ export const KEYS = {
   srs: 'srs.map',
   topics: 'prefs.topics',
   perDay: 'prefs.perDay',
+  lessonCatalogPrefix: 'lessons.catalog',
 };
+
+export function lessonCatalogKey(level: string) {
+  return `${KEYS.lessonCatalogPrefix}.${level}`;
+}

@@ -1,107 +1,67 @@
-// TODO: Topics selection, per-day, cached groups
 import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
-import { kvGet, kvSet, KEYS } from '@/lib/storage';
-import type { TopicGroup, Word, Topic, TopicKey, ProgressBuckets, SRSCard } from '@/types/vocab';
-import { TOPICS, normalizeTopicKey } from '@/types/vocab';
+import type { TopicGroup, Word, Topic, ProgressBuckets, SRSCard } from '@/types/vocab';
+import { TOPICS } from '@/types/vocab';
 
 type TopicsState = {
-  hydrated: boolean;
-
-  // prefs
-  perDay: number;                  // target new+review per day
-  selected: Set<TopicKey>;         // empty=set means "All"
-
-  // data
-  allWords: Word[];                // raw normalized words (from API)
-  groups: TopicGroup[];            // grouped words
-
-  hydrate(): Promise<void>;
-  setPerDay(n: number): void;
-  toggleTopic(key: TopicKey): void;
-  setSelected(keys: TopicKey[] | Set<TopicKey>): void;
-
-  setAllWords(words: Word[]): void;
-  setGroups(groups: TopicGroup[]): void;
-
-  // compute progress for each topic from SRS map
+  words: Word[];
+  groups: TopicGroup[];
+  setWords(words: Word[]): void;
+  reset(): void;
   progressByTopic(srsMap: Record<string, SRSCard>): Record<Topic, ProgressBuckets>;
 };
 
-export const useTopics = create<TopicsState>()(
-  devtools((set, get) => ({
-    hydrated: false,
-    perDay: 20,
-    selected: new Set<TopicKey>(),
+function emptyGroups(): TopicGroup[] {
+  return TOPICS.map(topic => ({ key: topic, title: topic, items: [] }));
+}
 
-    allWords: [],
-    groups: [],
+export const useTopics = create<TopicsState>()((set, get) => ({
+  words: [],
+  groups: emptyGroups(),
 
-    async hydrate() {
-      const [perDay, topics] = await Promise.all([
-        kvGet<number>(KEYS.perDay),
-        kvGet<TopicKey[]>(KEYS.topics),
-      ]);
-      set({
-        perDay: perDay ?? 20,
-        selected: new Set(topics ?? []),
-        hydrated: true,
-      });
-    },
+  setWords(words) {
+    const map = new Map<Topic, Word[]>();
+    TOPICS.forEach(topic => map.set(topic, []));
 
-    setPerDay(n) {
-      const perDay = Math.max(1, Math.min(200, Math.floor(n || 1)));
-      set({ perDay });
-      kvSet(KEYS.perDay, perDay);
-    },
+    words.forEach(word => {
+      const bucket = map.get(word.topicKey as Topic);
+      if (bucket) bucket.push(word);
+    });
 
-    toggleTopic(key) {
-      const sel = new Set(get().selected);
-      sel.has(key) ? sel.delete(key) : sel.add(key);
-      set({ selected: sel });
-      kvSet(KEYS.topics, Array.from(sel));
-    },
+    const groups: TopicGroup[] = TOPICS.map(topic => ({
+      key: topic,
+      title: topic,
+      items: map.get(topic) ?? [],
+    }));
 
-    setSelected(keys) {
-      const sel = keys instanceof Set ? new Set(keys) : new Set(keys);
-      set({ selected: sel });
-      kvSet(KEYS.topics, Array.from(sel));
-    },
+    set({ words, groups });
+  },
 
-    setAllWords(words) {
-      set({ allWords: words });
-    },
+  reset() {
+    set({ words: [], groups: emptyGroups() });
+  },
 
-    setGroups(groups) {
-      set({ groups });
-    },
+  progressByTopic(srsMap) {
+    const out = Object.fromEntries(
+      TOPICS.map(topic => [topic, { newCount: 0, dueCount: 0, futureCount: 0, byStep: {} as Record<number, number> }])
+    ) as Record<Topic, ProgressBuckets>;
 
-    progressByTopic(srsMap) {
-      // Seed an entry for every canonical Topic so the result always satisfies the type
-      const out = Object.fromEntries(
-        TOPICS.map(t => [t, { newCount: 0, dueCount: 0, futureCount: 0, byStep: {} as Record<number, number> }])
-      ) as Record<Topic, ProgressBuckets>;
-    
-      const groups = get().groups;
-    
-      const now = Date.now();
-      for (const g of groups) {
-        const t = normalizeTopicKey(g.key);          // coerce legacy keys → canonical Topic
-        const buckets = out[t];
-    
-        for (const w of g.items) {
-          const s = srsMap[w.id];
-          if (!s) {
-            buckets.newCount++;
-            continue;
-          }
-          if (s.next <= now) buckets.dueCount++; else buckets.futureCount++;
-          buckets.byStep[s.step] = (buckets.byStep[s.step] ?? 0) + 1;
+    const now = Date.now();
+
+    for (const group of get().groups) {
+      const buckets = out[group.title as Topic];
+      if (!buckets) continue;
+
+      for (const word of group.items) {
+        const card = srsMap[word.id];
+        if (!card) {
+          buckets.newCount += 1;
+          continue;
         }
+        if (card.next <= now) buckets.dueCount += 1; else buckets.futureCount += 1;
+        buckets.byStep[card.step] = (buckets.byStep[card.step] ?? 0) + 1;
       }
-    
-      return out;
-    },
-    
-  }))
-);
+    }
+
+    return out;
+  },
+}));

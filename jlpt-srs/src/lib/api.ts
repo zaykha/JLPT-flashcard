@@ -1,30 +1,65 @@
-// TODO: fetchers via react-query
-// src/lib/api.ts
-import { useQuery } from '@tanstack/react-query';
+// src/lib/api.ts — legacy helper for vocabulary session APIs
 
-const BASE = import.meta.env.VITE_JLPT_API_BASE ?? 'https://jlpt-vocab-api.vercel.app';
+// Use VITE_API_BASE to call a different origin in prod (when frontend + backend are on different domains).
+// For local `netlify dev`, leave it empty to use the proxy to http://localhost:8888
+const API_BASE = import.meta.env.VITE_API_BASE ?? '';
 
-// Raw API item shape (based on that public API)
-export type RawWord = {
-  word: string;       // kanji or kana
-  furigana?: string;  // reading
-  meaning: string;    // english
-  level: number;      // 1..5 (N1..N5)
+export type CreateSessionBody = {
+  uid: string;
+  level: 'N5'|'N4'|'N3'|'N2'|'N1';
+  perDay: number;
+  topics?: string[];
+  ratioDue?: number;
+  force?: boolean;
+  dateISO?: string;
 };
 
-async function fetchAllByLevel(level: number): Promise<RawWord[]> {
-  const url = `${BASE}/api/words/all?level=${level}&cb=${Date.now()}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`API ${res.status}`);
-  return res.json();
+export type VocabItem = {
+  id: string;
+  jp: string;
+  kana?: string;
+  romaji?: string;
+  meaning: string;
+  level: string;
+  topic: string;
+  subtopics?: string[];
+  tags?: string[];
+};
+
+export type CreateSessionResponse = {
+  dateISO: string;
+  meta: Record<string, unknown>;
+  wordIds: string[];
+  items: VocabItem[];
+};
+
+async function parseJSONSafe<T>(res: Response): Promise<T> {
+  const txt = await res.text();
+  try {
+    return JSON.parse(txt) as T;
+  } catch {
+    throw new Error(`Non-JSON response (${res.status}): ${txt?.slice(0, 400)}`);
+  }
 }
 
-// React Query hook — call this once in App bootstrap or a loader
-export function useJLPTWords(level: number | undefined) {
-  return useQuery({
-    queryKey: ['jlptWords', level],
-    queryFn: () => fetchAllByLevel(level!),
-    enabled: typeof level === 'number',
-    staleTime: 1000 * 60 * 60,
+export async function createOrGetTodaySession(
+  body: CreateSessionBody,
+  idToken?: string
+): Promise<CreateSessionResponse> {
+  const url = `${API_BASE}/api/v1/sessions`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
+    },
+    body: JSON.stringify(body),
   });
+
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error(`API ${res.status} ${res.statusText}: ${txt?.slice(0, 400)}`);
+  }
+
+  return parseJSONSafe<CreateSessionResponse>(res);
 }

@@ -4,14 +4,7 @@ import { useSession } from '@/store/session';
 import { Flashcard } from '@/components/flashcards/Flashcard';
 import { SpeechButton } from '@/components/flashcards/SpeechButton';
 import { useNavigate } from 'react-router-dom';
-// import flashcardbg from "@/assets/LoginPage/kozaloginmobile.png";  
-
-/** ====== Animations / Layout ====== */
-// const float = keyframes`
-//   0% { transform: translateY(0) }
-//   50% { transform: translateY(-4px) }
-//   100% { transform: translateY(0) }
-// `;
+import { TodayPeek } from '@/components/dev/TodayPeek';
 
 const Screen = styled.div`
   min-height: 100svh;
@@ -36,28 +29,49 @@ const TileOverlay = styled.div`
   pointer-events: none;
 `;
 
-const Panel = styled.section`
+export const Panel = styled.section`
   width: min(860px, 100%);
-  // background: ${({ theme }) => theme.colors.sheetBg};
+  // background: linear-gradient(145deg, #1f2937, #374151, 0.6);
   
   border: 2px solid #000;
   border-radius: 16px;
   box-shadow: 0 2px 0 #000, 0 8px 0 rgba(0,0,0,.35), ${({ theme }) => theme.shadow.card};
   padding: 16px;
   position: relative;
+  /* From https://css.glass */
+  background: rgba(255, 255, 255, 0.23);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(6.3px);
+  -webkit-backdrop-filter: blur(6.3px);
+  border: 1px solid rgba(255, 255, 255, 0.67);
 `;
 
 const Header = styled.div`
-  display: flex; justify-content: space-between; align-items: center;
+  // display: flex; 
+  // justify-content: 
+  // space-between; 
+  // align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin: 8px 0 6px;
   padding: 4px 6px 12px;
   border-bottom: 2px dashed ${({ theme }) => theme.colors.border};
 `;
 
 const Title = styled.div`
   font-family: ${({ theme }) => theme.fonts.heading};
+  // color:${({ theme }) => theme.colors.primary};
   color:#fff;
   font-size: clamp(14px, 3.6vw, 18px);
   letter-spacing: .5px;
+  text-align: center;
+  // background: linear-gradient(to right, #1f2937, rgba(55, 65, 81, 0));
+  // padding: 20px;
+  // border-radius: 10px;
+  // backdrop-filter: blur(6.3px);
+  // -webkit-backdrop-filter: blur(6.3px);
 `;
 
 const Body = styled.div`
@@ -72,21 +86,6 @@ const Stage = styled.div`
   gap: 10px;
   justify-items: center;
 `;
-
-// const CardFrame = styled.div`
-//   width: min(680px, 96%);
-//   border: 2px solid #000;
-//   border-radius: 16px;
-//   background: #ffffff;
-//   padding: 10px;
-//   box-shadow: 6px 6px 0 #000;  /* pixel offset */
-//   animation: ${float} 6s ease-in-out infinite;
-
-//   @media (max-width: 520px) {
-//     padding: 8px;
-//     box-shadow: 4px 4px 0 #000;
-//   }
-// `;
 
 /** ====== HUD / Progress ====== */
 const Hud = styled.div`
@@ -154,44 +153,26 @@ const Btn = styled.button<{variant?: 'primary'|'secondary'|'ghost'}>`
     padding: 10px 12px;
   }
 `;
-
-// const ModeWrap = styled.div`
-//   margin-top: 8px;
-//   display: grid;
-//   gap: 6px;
-//   justify-items: center;
-// `;
-
-// const ModeLabel = styled.div`
-//   font-family: ${({ theme }) => theme.fonts.body};
-//   font-size: clamp(11px, 3vw, 12px);
-//   color: ${({ theme }) => theme.colors.textMuted};
-// `;
-
-// const ModeChips = styled.div`
-//   display: grid;
-//   grid-auto-flow: column;
-//   gap: 8px;
-// `;
-
-// const Chip = styled.button<{active?: boolean}>`
-//   padding: 8px 10px;
-//   border-radius: 12px;
-//   border: 2px solid #000;
-//   font-family: ${({ theme }) => theme.fonts.body};
-//   font-size: clamp(11px, 3vw, 12px);
-//   letter-spacing: .02em;
-//   cursor: pointer;
-
-//   color: ${({ active, theme }) => active ? '#fff' : theme.colors.text};
-//   background: ${({ active, theme }) => active ? theme.colors.secondary : '#fff'};
-//   box-shadow: 3px 3px 0 #000;
-
-//   transition: transform .1s ease, box-shadow .1s ease, background .15s ease;
-//   &:hover { transform: translateY(-1px); }
-//   &:active { transform: translate(3px,3px); box-shadow: 0 0 0 #000; }
-// `;
-
+const ModalBackdrop = styled.div`
+  position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+  display: grid; place-items: center; z-index: 50;
+`;
+const Modal = styled.div`
+background:  linear-gradient(135deg,#1f2937,#374151);
+  color: #fff; 
+  border-radius: 16px;
+  padding: 30px; 
+  width: min(92vw, 420px); box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+`;
+const TopRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0 6px;
+  text-align: left;
+  @media (max-width: 480px) { grid-template-columns: 1fr; }
+`;
+const Small = styled.div` font-size: 12px; opacity: 0.9; `;
 /** ====== Component ====== */
 export const FlashcardsPage: React.FC = () => {
   const today = useSession(s => s.today);
@@ -199,14 +180,18 @@ export const FlashcardsPage: React.FC = () => {
   const next = useSession(s => s.next);
   const prev = useSession(s => s.prev);
   const setStage = useSession(s => s.setStage);
+  const lessonNo = useSession(s => s.lessonNo);
+  const quizAttempt = useSession(s => s.quizAttempt);
   const buildTodayFixed = useSession(s => s.buildTodayFixed);
   const nav = useNavigate();
-
+  const buildQuiz = useSession(s => s.buildQuiz);
   const [flipped, setFlipped] = useState(false);
   const [mode] = useState<'kanji-to-english' | 'english-to-kanji'>('kanji-to-english');
-
+  // NEW: modal state
+  const [showQuizPrompt, setShowQuizPrompt] = useState(false);
   useEffect(() => { (async () => {
-    if (!today.length) await buildTodayFixed();
+    if (!today.length) try{await buildTodayFixed();}
+    catch (e) { console.error(e); }
   })(); }, [today.length, buildTodayFixed]);
 
   // keyboard: ← → navigate, Space flips
@@ -234,11 +219,12 @@ export const FlashcardsPage: React.FC = () => {
   }
 
   const word = today[index];
+  const atEnd = index + 1 >= today.length;
   const pct = Math.min(100, Math.round(((index + 1) / today.length) * 100));
 
   function handleNext() {
-    if (index + 1 >= today.length) {
-      setStage('quiz'); // continue flow
+    if (atEnd) {
+      setShowQuizPrompt(true);   // ← show modal instead of jumping
       return;
     }
     setFlipped(false);
@@ -249,6 +235,12 @@ export const FlashcardsPage: React.FC = () => {
     prev();
   }
 
+  function startQuizNow() {
+    setShowQuizPrompt(false);
+    buildQuiz();
+    setStage('quiz');
+  }
+
   return (
     <Screen>
       <TileOverlay />
@@ -256,6 +248,10 @@ export const FlashcardsPage: React.FC = () => {
         <Header>
         <Btn variant="secondary" onClick={() => nav(-1)}>← Back</Btn>
           <Title>Flashcards</Title>
+          <TopRow>
+            <Small>Lesson: <b>{lessonNo ?? '-'}</b></Small>
+            <Small>Quiz attempt: <b>{quizAttempt}</b></Small>
+          </TopRow>
           {/* You can put a tiny sprite/icon here later if you want */}
         </Header>
 
@@ -269,20 +265,37 @@ export const FlashcardsPage: React.FC = () => {
             </CardFrame> */}
             <Flashcard word={word} flipped={flipped} onFlip={() => setFlipped(f => !f)} mode={mode} />
 
-           
-
             <Controls>
               <Btn variant="secondary" onClick={handlePrev}>← Prev</Btn>
               {/* <Btn variant="ghost" onClick={() => setFlipped(f => !f)}>Flip</Btn> */}
               <SpeechButton word={word} />
               <Btn variant="primary" onClick={handleNext}>Next →</Btn>
             </Controls>
-
            
-
           </Stage>
         </Body>
+        <div>
+            {atEnd && (
+              <Btn variant="primary" onClick={() => setShowQuizPrompt(true)}>Start Quiz →</Btn>
+            )}
+          </div>
       </Panel>
+      {showQuizPrompt && (
+        <ModalBackdrop onClick={() => setShowQuizPrompt(false)}>
+          <Modal onClick={(e) => e.stopPropagation()}>
+            <h3>Ready for the quiz?</h3>
+            <TopRow>
+              <Small>Lesson: <b>{lessonNo ?? '-'}</b></Small>
+              <Small>Quiz attempt: <b>{quizAttempt}</b></Small>
+            </TopRow>
+            <div style={{ display:'flex', gap:12, marginTop:16 }}>
+              <Btn variant="secondary" onClick={() => setShowQuizPrompt(false)}>Review more</Btn>
+              <Btn variant="primary" onClick={startQuizNow}>Start Quiz</Btn>
+            </div>
+          </Modal>
+        </ModalBackdrop>
+      )}
+      {/* {process.env.NODE_ENV !== 'production' && <TodayPeek />} */}
     </Screen>
   );
 };

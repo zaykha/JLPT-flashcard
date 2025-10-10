@@ -1,5 +1,5 @@
 // TODO: Audio button
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useSpeech } from '@/hooks/useSpeech';
 import type { Word } from '@/types/vocab';
@@ -49,16 +49,33 @@ transition: transform .1s ease, box-shadow .1s ease, opacity .15s ease;
   opacity: 0.5;
 }
 `;
-
+const Wrapper = styled.div`
+  display: inline-flex;
+  align-items: center;
+`;
 
 type Props = { word: Word };
 
 export const SpeechButton: React.FC<Props> = ({ word }) => {
-  const { speak } = useSpeech();
+  const { speakAsync, unlock, isSpeaking } = useSpeech();
+  const [busy, setBusy] = useState(false);
 
+  const text = word.hiragana || word.kanji || word.romaji || '';
+
+  async function handleSpeak(e: React.MouseEvent) {
+    e.stopPropagation();
+    try {
+      unlock();                         // ensure mobile unlock on user gesture
+      setBusy(true);
+      await speakAsync(text, { lang: 'ja-JP', rate: 1, pitch: 1 });
+    } catch { /* no-op */ }
+    finally { setBusy(false); }
+  }
   return (
-    <Btn onClick={(e) => { e.stopPropagation(); speak(word.hiragana || word.kanji); }}>
-      🔊
-    </Btn>
+    <Wrapper>
+      <Btn onClick={handleSpeak} disabled={busy || isSpeaking || !text}>
+        {busy || isSpeaking ? '···' : '🔊'}
+      </Btn>
+    </Wrapper>
   );
 };

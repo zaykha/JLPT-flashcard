@@ -1,33 +1,25 @@
+// src/styles/styled.d.ts
 import 'styled-components';
-// people
-// places
-// food
-// time
-// travel
-// school
-// work
-// feelings
-// body
-// numbers
-// Others
+import type { Topic } from '@/types/vocab';
+
 declare module 'styled-components' {
   export interface DefaultTheme {
-      colors: {
-    primary: string;   // brand gold-brown
-    secondary: string;  // sage green
-    text: string;
-    textMuted: string;
-    sheetBg: string;
-    border: string;
-    },
+    colors: {
+      primary: string;
+      secondary: string;
+      text: string;
+      textMuted: string;
+      sheetBg: string;
+      border: string;
+    };
     fonts: {
       heading: string;
       body: string;
-    },
+    };
     radii: {
       pill: string;
       card: string;
-    },
+    };
     radius: {
       sm: string;
       md: string;
@@ -43,24 +35,15 @@ declare module 'styled-components' {
       slate: string;
       green: string;
     };
-    topicGradients: {
-      people: string,           // ink-slate
-      places: string,           // brand blend
-      food:  string,           // indigo → blue
-      time:  string,           // tealish
-      travel: string,           // curry gold
-      school: string,           // ocean jade
-      work:  string,           // forest
-      feelings: string,           // arcane violet
-      body: string,           // steel/cyber
-      numbers: string,           // clean green
-      Others: string,           // charcoal
-    };
+
+    // ✅ canonical topics map → gradient string
+    topicGradients: Record<Topic, string>;
+
     textures: {
-      scanlines: string,
-      dither: string,
-      border8: string,
-    },
+      scanlines: string;
+      dither: string;
+      border8: string;
+    };
     color: {
       text: string;
       muted: string;
