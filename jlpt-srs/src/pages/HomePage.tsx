@@ -42,7 +42,7 @@ import type {
   LessonFailure,
   LessonQuizSnapshot,
 } from '@/lib/user-data';
-import { DebugOverlay } from '@/components/dev/debugOverlay';
+import { DebugOverlay } from '@/components/dev/DebugOverlay';
 
 
 const MainGrid = styled.div`

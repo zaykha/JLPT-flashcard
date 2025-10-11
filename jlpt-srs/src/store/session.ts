@@ -35,7 +35,7 @@ type SessionState = {
   index: number;
   lessonNo: number | null;   // e.g., 2025-10-03
   quizAttempt: number;       // attempt count for current lesson
-
+ 
   // quiz
   quiz: QuizItem[];
   quizIndex: number;
@@ -258,92 +258,7 @@ const vocabWords = vocabDocs.map(d => {
 
 // session.ts — 4) REMOVE the typing builder and references (delete your old buildTyping)
 // and REPLACE buildQuiz() to use dynamic size and no 'typing'
-// buildQuiz() {
-//   const { today, quizConfig } = get();
-//   const pool = today.slice();
-//   if (pool.length === 0) { set({ quiz: [], quizIndex: 0 }); return; }
 
-//   const items: QuizItem[] = [];
-//   const shuffled = shuffle(pool);
-//   const targetSize = Math.max(1, quizConfig.size || 10);
-
-//   const buildMCQ = (w: Word): QuizItem => {
-//     const correct = w.english;
-//     const distractors = shuffle(pool.filter(x => x.id !== w.id)).slice(0, 3).map(x => x.english);
-//     const choices = shuffle([correct, ...distractors]);
-//     const prompt = w.kanji || w.hiragana || w.romaji || w.english;
-//     return { id: `q_${w.id}_mcq`, type: 'mcq', prompt, choices, correct, sourceId: w.id };
-//   };
-
-//   const buildMatching = (chunk: Word[]): QuizItem => {
-//     const pick = chunk.slice(0, 4);
-//     const lefts = pick.map(x => ({
-//       left: x.kanji || x.hiragana || x.romaji || x.english,
-//       sourceId: x.id
-//     }));
-//     const rightPool = pick.map(x => ({ text: x.english, id: x.id }));
-//     const shuf = shuffle(rightPool);
-//     const pairs = lefts.map((L, i) => ({
-//       left: L.left,
-//       sourceId: L.sourceId,
-//       right: shuf[i].text,
-//       rightId: shuf[i].id,
-//     }));
-//     return { id: `q_match_${pick.map(p=>p.id).join('_')}`, type: 'matching', pairs };
-//   };
-
-//   const buildKanjiToHiragana = (w: Word, pool: Word[]): QuizItem => {
-//     if (!w.kanji || !w.hiragana) throw new Error('Not a kanji word');
-//     const correct = w.hiragana;
-//     const distractors = shuffle(pool.filter(x => x.id !== w.id && x.hiragana))
-//       .slice(0, 3)
-//       .map(x => x.hiragana!);
-//     const choices = shuffle([correct, ...distractors]);
-//     return { id: `q_${w.id}_k2h`, type: 'kanjiToHiragana', prompt: w.kanji, choices, correct, sourceId: w.id };
-//   };
-
-//   const buildHiraganaToKanji = (w: Word, pool: Word[]): QuizItem => {
-//     if (!w.hiragana || !w.kanji) throw new Error('Not a kana+kanji word');
-//     const correct = w.kanji;
-//     const distractors = shuffle(pool.filter(x => x.id !== w.id && x.kanji))
-//       .slice(0, 3)
-//       .map(x => x.kanji!);
-//     const choices = shuffle([correct, ...distractors]);
-//     return { id: `q_${w.id}_h2k`, type: 'hiraganaToKanji', prompt: w.hiragana, choices, correct, sourceId: w.id };
-//   };
-
-//   let i = 0;
-//   while (items.length < targetSize && i < shuffled.length) {
-//     for (const kind of quizConfig.types) {
-//       if (items.length >= targetSize) break;
-
-//       if (kind === 'matching') {
-//         const chunk = shuffled.slice(i, i + 4);
-//         if (chunk.length < 4) break;
-//         items.push(buildMatching(chunk));
-//         i += 4;
-//         continue;
-//       }
-
-//       const w = shuffled[i++];
-//       if (!w) break;
-
-//       if (kind === 'kanjiToHiragana') {
-//         if (w.kanji && w.hiragana) items.push(buildKanjiToHiragana(w, pool));
-//         continue;
-//       }
-//       if (kind === 'hiraganaToKanji') {
-//         if (w.hiragana && w.kanji) items.push(buildHiraganaToKanji(w, pool));
-//         continue;
-//       }
-
-//       // default to MCQ
-//       items.push(buildMCQ(w));
-//     }
-//   }
-
-//   set({ quiz: items, quizIndex: 0, quizResults: [] });
-// },
 buildQuiz() {
   const { today, quizConfig } = get();
   const pool = today.slice();
