@@ -1,25 +1,37 @@
 import type { JLPTLevelStr } from '@/lib/user-data';
+import type { Timestamp } from 'firebase/firestore';
 
-export type WalletDaily = {
-  lessonsTaken: number;
-  extraLessonsUsed: number;
-  missedLessonsRedeemed: number;
-};
+export type FirebaseTimestamp = Timestamp;
 
 export type Wallet = {
   shards: number;
-  lastResetISO?: string | number | null;
-  daily?: WalletDaily;
-  quizAttemptsByLesson?: Record<string, number>;
-  updatedAt?: number | null;
+  updatedAt: FirebaseTimestamp;
+  premium?: {
+    status: 'none'|'active'|'past_due'|'canceled';
+    subscriptionId?: string;
+    currentPeriodEnd?: FirebaseTimestamp;
+  };
 };
 
 export type WalletTransaction = {
-  id: string;
-  type: string;
+  // Firestore doc id (optional for UI convenience)
+  id?: string;
+  type: 'shard_topup'|'spend'|'reward'|'refund';
   amount: number;
-  createdAt: number | null;
-  payload?: Record<string, unknown>;
+  balanceAfter?: number;
+  source?: { provider: 'stripe'|'system'; paymentIntentId?: string; orderId?: string; };
+  note?: string;
+  createdAt: FirebaseTimestamp;
+};
+
+export type WalletOrder = {
+  priceId: string;
+  shards: number;
+  status: 'pending'|'completed'|'canceled'|'failed';
+  sessionId?: string;
+  paymentIntentId?: string;
+  createdAt: FirebaseTimestamp;
+  completedAt?: FirebaseTimestamp;
 };
 
 export type WalletResponse = {

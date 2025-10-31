@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { loadStripe, type StripeElementLocale } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import type { Product } from '@/lib/api/types';
 import { usePayments } from '@/hooks/usePayments';
 import { useWalletContext } from '@/features/wallet/WalletProvider';
@@ -19,7 +19,8 @@ import {
   Spinner,
 } from '@/features/wallet/styles';
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ?? '');
+// Lazy initialize Stripe inside the Checkout component so we don't throw
+// IntegrationError at module load when the key is not configured yet.
 const RECOMMENDED_SKU = 'SHARDS_4980';
 const currencyFormatter = new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' });
 
@@ -81,7 +82,16 @@ export const BuyShardsModal: React.FC<Props> = ({ open, onClose, initialSku }) =
     setMessage(null);
     try {
       console.info('wallet.select_sku', { sku: product.sku, ts: Date.now() });
-      const { orderId: id, clientSecret: secret } = await beginOrder(product.sku);
+      // Provide backend with priceId/amount/shards to avoid undefined fields
+      const priceId = (product as any).priceId ?? (product as any).stripePriceId ?? undefined;
+      const amount = Number.isFinite(Number((product as any).amount ?? (product as any).priceJpy))
+        ? Number((product as any).amount ?? (product as any).priceJpy)
+        : undefined;
+      const { orderId: id, clientSecret: secret } = await beginOrder(product.sku, {
+        priceId,
+        amount,
+        shards: (product as any).shards,
+      });
       console.info('wallet.begin_order', { sku: product.sku, orderId: id, ts: Date.now() });
       setOrderId(id);
       setClientSecret(secret);
@@ -98,6 +108,8 @@ export const BuyShardsModal: React.FC<Props> = ({ open, onClose, initialSku }) =
     fetchCatalog()
       .then(response => {
         console.info('wallet.catalog_loaded', { count: response.products.length, ts: Date.now() });
+        // Debug: log full products received from backend for inspection
+        try { console.log('[wallet] products_raw', response.products); } catch {}
         setCatalog({ products: response.products, loading: false, error: null, currency: response.currency });
         if (initialSku) {
           const found = response.products.find(p => p.sku === initialSku);
@@ -193,17 +205,38 @@ type CheckoutProps = {
 };
 
 const Checkout: React.FC<CheckoutProps> = ({ clientSecret, orderId, product, onClose, setMessage, refresh }) => {
+  const theme = useTheme();
+  const isDark = useMemo(() => {
+    // Rough luminance check for theme background
+    const hex = String(theme.colors.bg || '#000').replace('#','');
+    const bigint = parseInt(hex.length === 3 ? hex.split('').map(c=>c+c).join('') : hex, 16);
+    const r = (bigint >> 16) & 255, g = (bigint >> 8) & 255, b = bigint & 255;
+    const luminance = 0.2126*r + 0.7152*g + 0.0722*b; // 0..255
+    return luminance < 140;
+  }, [theme.colors.bg]);
+
   const options = useMemo(() => ({
     clientSecret,
-    locale: 'ja' as StripeElementLocale,
+    locale: (import.meta.env.VITE_STRIPE_LOCALE ?? 'auto') as StripeElementLocale,
     appearance: {
-      theme: 'stripe' as 'flat' | 'stripe' | 'night',
+      theme: (isDark ? 'night' : 'stripe') as 'flat' | 'stripe' | 'night',
+      variables: {
+        colorText: theme.colors.text,
+        colorBackground: theme.colors.sheetBg,
+        colorPrimary: theme.colors.primary,
+        colorDanger: theme.colors.danger,
+        fontFamily: theme.fonts.body,
+        borderRadius: '10px',
+      },
     },
-  }), [clientSecret]);
+  }), [clientSecret, isDark, theme.colors.text, theme.colors.sheetBg, theme.colors.primary, theme.colors.danger, theme.fonts.body]);
 
-  if (!import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY) {
+  const pk = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string | undefined;
+  if (!pk) {
     return <ErrorText>No Stripe publishable key configured.</ErrorText>;
   }
+
+  const stripePromise = useMemo(() => loadStripe(pk), [pk]);
 
   return (
     <Elements stripe={stripePromise} options={options}>
@@ -241,6 +274,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ product, orderId, onClose, 
       elements,
       confirmParams: {
         return_url: window.location.href,
+        // Provide minimal billing details so flows that require a name succeed
+        payment_method_data: {
+          billing_details: { name: 'Cardholder' },
+        },
       },
       redirect: 'if_required',
     });
@@ -256,7 +293,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ product, orderId, onClose, 
       const el = document.getElementById('wallet-balance');
       el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    console.info('wallet.sync_after_payment', { sku: product.sku, orderId, ts: Date.now() });
+    console.info('wallet.sync_after_payment', { sku: product.sku, orderId, ts: Date.now()});
     setMessage('+ Shards added!');
     setTimeout(onClose, 800);
   };
@@ -268,7 +305,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ product, orderId, onClose, 
           <span role="img" aria-label="glyph shards">💠</span>
           <strong>{product.shards.toLocaleString('ja-JP')} shards</strong>
         </div>
-        <small>{currencyFormatter.format(product.amount)}</small>
+        <small>{currencyFormatter.format(Number.isFinite(Number((product as any).amount)) ? Number((product as any).amount) : 0)}</small>
       </CheckoutHeader>
 
       <PaymentElement onReady={() => setPaymentReady(true)} />
@@ -280,7 +317,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ product, orderId, onClose, 
           onClick={handleSubmit}
           disabled={submitting || !paymentReady}
         >
-          {submitting ? 'Processing…' : `Pay ${currencyFormatter.format(product.amount)}`}
+          {submitting ? 'Processing…' : `Pay ${currencyFormatter.format(Number.isFinite(Number((product as any).amount)) ? Number((product as any).amount) : 0)}`}
         </PrimaryButton>
       </Actions>
     </CheckoutWrap>
@@ -321,12 +358,13 @@ function trapFocus(event: KeyboardEvent, container: HTMLElement) {
 
 const ErrorText = styled.div`
   font-size: 0.8rem;
-  color: #f87171;
+  color: ${({ theme }) => theme.colors.danger};
 `;
 
 const Status = styled.div`
   font-size: 0.8rem;
-  opacity: 0.75;
+  color: ${({ theme }) => theme.colors.text};
+  opacity: 0.8;
 `;
 
 const CheckoutWrap = styled.div`
@@ -346,11 +384,14 @@ const CheckoutHeader = styled.div`
   }
   small {
     font-size: 0.8rem;
+    color: ${({ theme }) => theme.colors.text};
   }
+  @media (max-width: 480px) { flex-direction: column; align-items: flex-start; gap: 6px; }
 `;
 
 const Actions = styled.div`
   display: flex;
   gap: 12px;
   justify-content: flex-end;
+  @media (max-width: 480px) { flex-wrap: wrap; button { flex: 1 1 auto; } }
 `;

@@ -14,7 +14,7 @@ type StudyRecordMutable = {
 
 export function buildProgressInsights(
   progress: LessonProgress | undefined,
-  currentLessonId: string | null,
+  currentLessonNo: number | null,
   currentQuizLength: number,
   currentQuizResults: Array<{ correct: boolean }>,
   currentQuizAttempt: number,
@@ -42,16 +42,15 @@ export function buildProgressInsights(
   const registerStats = (
     target: QuizAttemptStat[],
     snapshot: LessonQuizSnapshot | undefined,
-    lessonId: string,
+    lessonNo: number,
     timestamp: string | undefined,
     passed: boolean,
   ) => {
     if (!snapshot) return;
-    const isoTimestamp = timestamp ?? `${lessonId}-attempt`;
-    const dateISO = (timestamp ?? lessonId).slice(0, 10);
+    const dateISO = (timestamp ?? '').slice(0, 10);
     target.push({
-      id: `${lessonId}-${isoTimestamp}-${target.length}`,
-      lessonId,
+      id: `${lessonNo}-${dateISO}-${target.length}`,
+      lessonNo,                     
       dateISO,
       score: computeSnapshotScore(snapshot),
       averageTime: computeAverageTime(snapshot),
@@ -59,6 +58,7 @@ export function buildProgressInsights(
       passed,
     });
   };
+
 
   const mergeRecord = (
     dateISO: string,
@@ -85,29 +85,57 @@ export function buildProgressInsights(
     if (passed) record.completed = true;
   };
 
-  (progress?.failed ?? []).forEach((entry: LessonFailure) => {
-    const attemptDate = (entry.attemptedAt ?? '').slice(0, 10) || entry.lessonId;
-    registerStats(vocabStats, entry.quiz, entry.lessonId, entry.attemptedAt, false);
-    registerStats(grammarStats, entry.grammarQuiz, entry.lessonId, entry.attemptedAt, false);
-    mergeRecord(attemptDate, entry.quiz, 'vocab', false);
-    mergeRecord(attemptDate, entry.grammarQuiz, 'grammar', false);
-  });
+// FAILED
+(progress?.failed ?? []).forEach((entry: LessonFailure) => {
+  // coerce lessonNo, with legacy fallback to lessonId
+  const ln =
+    typeof entry.lessonNo === 'number'
+      ? entry.lessonNo
+      : Number.isFinite(parseInt((entry as any).lessonId, 10))
+      ? parseInt((entry as any).lessonId, 10)
+      : NaN;
 
-  (progress?.completed ?? []).forEach((entry: LessonCompletion) => {
-    const completionDate = (entry.completedAt ?? '').slice(0, 10) || entry.lessonId;
-    registerStats(vocabStats, entry.quiz, entry.lessonId, entry.completedAt, true);
-    registerStats(grammarStats, entry.grammarQuiz, entry.lessonId, entry.completedAt, true);
-    mergeRecord(completionDate, entry.quiz, 'vocab', true);
-    mergeRecord(completionDate, entry.grammarQuiz, 'grammar', true);
-  });
+  if (!Number.isFinite(ln)) {
+    console.warn('[insights] skip failed entry without lessonNo/lessonId', entry);
+    return;
+  }
+
+  const attemptDate = (entry.attemptedAt ?? '').slice(0, 10);
+  registerStats(vocabStats, entry.quiz, ln, entry.attemptedAt, false);
+  registerStats(grammarStats, entry.grammarQuiz, ln, entry.attemptedAt, false);
+  mergeRecord(attemptDate, entry.quiz, 'vocab', false);
+  mergeRecord(attemptDate, entry.grammarQuiz, 'grammar', false);
+});
+
+// COMPLETED
+(progress?.completed ?? []).forEach((entry: LessonCompletion) => {
+  const ln =
+    typeof entry.lessonNo === 'number'
+      ? entry.lessonNo
+      : Number.isFinite(parseInt((entry as any).lessonId, 10))
+      ? parseInt((entry as any).lessonId, 10)
+      : NaN;
+
+  if (!Number.isFinite(ln)) {
+    console.warn('[insights] skip completed entry without lessonNo/lessonId', entry);
+    return;
+  }
+
+  const completionDate = (entry.completedAt ?? '').slice(0, 10);
+  registerStats(vocabStats, entry.quiz, ln, entry.completedAt, true);
+  registerStats(grammarStats, entry.grammarQuiz, ln, entry.completedAt, true);
+  mergeRecord(completionDate, entry.quiz, 'vocab', true);
+  mergeRecord(completionDate, entry.grammarQuiz, 'grammar', true);
+});
+
 
   // reflect in-progress quiz attempts today (without marking completed)
-  if (currentLessonId && currentQuizResults.length > 0 && currentQuizLength > 0) {
-    const todayRecord = ensureRecord(currentLessonId.slice(0, 10));
-    if (!todayRecord.completed) {
-      todayRecord.vocabAttempts = Math.max(todayRecord.vocabAttempts, currentQuizAttempt);
-    }
+if (currentLessonNo && currentQuizResults.length > 0 && currentQuizLength > 0) {
+  const todayRecord = ensureRecord(new Date().toISOString().slice(0, 10));
+  if (!todayRecord.completed) {
+    todayRecord.vocabAttempts = Math.max(todayRecord.vocabAttempts, currentQuizAttempt);
   }
+}
 
   const calendarRecords = Array.from(calendarMap.values())
     .map(record => {
@@ -165,6 +193,7 @@ export function computeStreakStats(progress: LessonProgress | undefined) {
     return { current: 0, longest: 0, daysStudied };
   }
 
+  // Longest streak across all time
   let longest = 0;
   let run = 0;
   let prev: string | null = null;
@@ -180,14 +209,22 @@ export function computeStreakStats(progress: LessonProgress | undefined) {
     prev = dateISO;
   });
 
-  const today = new Date();
+  // Current streak should be considered "live" if it extends through yesterday.
   const completedSet = new Set(uniqueDates);
+  const ref = new Date();
+  const todayISO = ref.toISOString().slice(0, 10);
+  const base = new Date(ref);
+  if (!completedSet.has(todayISO)) {
+    base.setDate(base.getDate() - 1); // use yesterday if today not completed
+  }
+
   let current = 0;
+  // Walk backwards from base day while there are consecutive completions
   for (let i = 0; i < 365; i += 1) {
-    const iso = today.toISOString().slice(0, 10);
+    const iso = base.toISOString().slice(0, 10);
     if (completedSet.has(iso)) {
       current += 1;
-      today.setDate(today.getDate() - 1);
+      base.setDate(base.getDate() - 1);
     } else {
       break;
     }

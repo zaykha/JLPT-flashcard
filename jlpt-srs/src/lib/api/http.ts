@@ -2,7 +2,11 @@ import type { ApiError } from '@/lib/api/types';
 import { getIdToken } from '@/lib/auth/getIdToken';
 
 const ABSOLUTE_PATTERN = /^https?:\/\//i;
-const API_BASE = (import.meta.env.VITE_API_BASE ?? '').replace(/\/$/, '');
+const API_MODE = (import.meta.env.VITE_API_MODE ?? 'prod').toLowerCase();
+// In local mode we rely on Vite's dev proxy to forward /.netlify/functions → http://localhost:8888
+const API_BASE = API_MODE === 'local'
+  ? ''
+  : (import.meta.env.VITE_API_BASE ?? '').replace(/\/$/, '');
 const FUNCTIONS_PREFIX = '/.netlify/functions';
 
 function resolveUrl(path: string): string {

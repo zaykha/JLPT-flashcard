@@ -11,6 +11,7 @@ type Props = {
 };
 
 export const ProductCard: React.FC<Props> = ({ product, onSelect, highlight }) => {
+  const price = Number.isFinite(Number((product as any).amount)) ? Number((product as any).amount) : 0;
   return (
     <Card $highlight={highlight}>
       {product.bonus ? <Bonus>+{product.bonus} bonus</Bonus> : null}
@@ -18,7 +19,7 @@ export const ProductCard: React.FC<Props> = ({ product, onSelect, highlight }) =
         <span role="img" aria-label="glyph shards">💠</span>
         <strong>{product.shards.toLocaleString('ja-JP')}</strong>
       </Shards>
-      <Price>{formatter.format(product.amount)}</Price>
+      <Price>{formatter.format(price)}</Price>
       {highlight ? <Badge>Best Value</Badge> : null}
       <SelectButton type="button" onClick={() => onSelect(product)}>
         Choose
@@ -29,15 +30,14 @@ export const ProductCard: React.FC<Props> = ({ product, onSelect, highlight }) =
 
 const Card = styled.div<{ $highlight?: boolean }>`
   position: relative;
-  border: 2px solid ${({ $highlight }) => ($highlight ? '#8B6B3F' : 'rgba(0,0,0,0.12)')};
+  border: 2px solid ${({ theme, $highlight }) => ($highlight ? theme.colors.primary : theme.colors.pixelBorder)};
   border-radius: 16px;
-  background:
-    linear-gradient(145deg, rgba(139,107,63,0.12), rgba(111,126,79,0.08)),
-    #fff;
+  background: ${({ theme }) => theme.colors.panel};
   padding: 16px;
   display: grid;
   gap: 10px;
   text-align: center;
+  color: ${({ theme }) => theme.colors.text};
   box-shadow: ${({ $highlight }) => ($highlight ? '0 12px 28px rgba(139,107,63,0.25)' : 'none')};
 `;
 
@@ -67,12 +67,13 @@ const Shards = styled.div`
   justify-content: center;
   gap: 6px;
   span { font-size: 20px; }
-  strong { font-family: ${({ theme }) => theme.fonts.heading}; font-size: 1.6rem; }
+  strong { font-family: ${({ theme }) => theme.fonts.heading}; font-size: 1.2rem; }
 `;
 
 const Price = styled.div`
   font-size: 0.95rem;
   font-weight: 600;
+  color: ${({ theme }) => theme.colors.text};
 `;
 
 const SelectButton = styled.button`

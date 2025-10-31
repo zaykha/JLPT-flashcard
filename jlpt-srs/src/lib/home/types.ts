@@ -2,7 +2,7 @@ export type QuizType = 'vocab' | 'grammar';
 
 export type QuizAttemptStat = {
   id: string;
-  lessonId: string;
+  lessonNo: number;
   dateISO: string;
   score: number | null;
   averageTime: number | null;

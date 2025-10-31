@@ -1,0 +1,520 @@
+{
+  "stats": {
+    "filesScanned": 184,
+    "entrypoints": [
+      "src/main.tsx",
+      "src/App.tsx"
+    ],
+    "reachableCount": 9,
+    "unreferencedCount": 166,
+    "filesWithUnusedExports": 0,
+    "unusedExportCount": 0,
+    "duplicateFunctionGroups": 4,
+    "circularDependencyGroups": 0,
+    "reactSuspects": 34,
+    "unusedPublicAssets": 25
+  },
+  "unreferencedFiles": [
+    "eslint.config.js",
+    "src/components/TopBar/ShardHUD.tsx",
+    "src/components/animated/flame.tsx",
+    "src/components/dev/DebugOverlay.tsx",
+    "src/components/dev/TodayPeek.tsx",
+    "src/components/flashcards/Flashcard.tsx",
+    "src/components/flashcards/GrammarFlashcard.tsx",
+    "src/components/flashcards/SpeechButton.tsx",
+    "src/components/home/AchievementScrolls.tsx",
+    "src/components/home/BuyMoreModal.tsx",
+    "src/components/home/DailySummaryCard.tsx",
+    "src/components/home/DailyTasks.tsx",
+    "src/components/home/ExtraCurricular.tsx",
+    "src/components/home/HeaderBar.tsx",
+    "src/components/home/ProgressModal.tsx",
+    "src/components/home/QuizInsights.tsx",
+    "src/components/home/QuizStatsModal.tsx",
+    "src/components/home/StreakCalendar.tsx",
+    "src/components/home/StreakRings.tsx",
+    "src/components/home/StudyCalendar.tsx",
+    "src/components/home/StudySection.tsx",
+    "src/components/home/index.ts",
+    "src/components/layout/BottomBar.tsx",
+    "src/components/layout/ThemeToggle.tsx",
+    "src/components/layout/TopBar.tsx",
+    "src/components/quiz/Choices.tsx",
+    "src/components/quiz/Quiz.tsx",
+    "src/components/quiz/QuizQuestion.tsx",
+    "src/components/settings/SettingsModal.tsx",
+    "src/components/study/TopicCard.tsx",
+    "src/components/ui/Button.tsx",
+    "src/components/ui/Card.tsx",
+    "src/components/ui/LoadingScreen.tsx",
+    "src/components/ui/Modal.tsx",
+    "src/components/ui/Pill.tsx",
+    "src/components/ui/ProgressBar.tsx",
+    "src/components/ui/TopicIcon.tsx",
+    "src/components/wallet/ConfirmSpendDialog.tsx",
+    "src/features/wallet/BuyShardsModal.tsx",
+    "src/features/wallet/ProductCard.tsx",
+    "src/features/wallet/TransactionList.tsx",
+    "src/features/wallet/WalletDebugPanel.tsx",
+    "src/features/wallet/WalletPage.tsx",
+    "src/features/wallet/WalletProvider.tsx",
+    "src/features/wallet/styles.ts",
+    "src/helpers/arrays.ts",
+    "src/helpers/examV1.ts",
+    "src/helpers/flowGuards.ts",
+    "src/helpers/grammarText.ts",
+    "src/helpers/historyV1.ts",
+    "src/helpers/kana.ts",
+    "src/helpers/lessonCalcV1.ts",
+    "src/helpers/levelsV1.ts",
+    "src/helpers/progressV1.ts",
+    "src/helpers/quizGradeV1.ts",
+    "src/helpers/quizTiming.ts",
+    "src/helpers/sanitize.ts",
+    "src/helpers/snapshotsV1.ts",
+    "src/helpers/srsV1.ts",
+    "src/helpers/text.ts",
+    "src/helpers/todayV1.ts",
+    "src/hooks/useCountdownV1.ts",
+    "src/hooks/useGrammarFlashcard.ts",
+    "src/hooks/useIsMobile.ts",
+    "src/hooks/useKeyNavsV1.ts",
+    "src/hooks/useLessonCatalog.ts",
+    "src/hooks/useLessonProgress.ts",
+    "src/hooks/useLessonProgressV1.ts",
+    "src/hooks/usePayments.ts",
+    "src/hooks/useProfileV1.ts",
+    "src/hooks/usePurchase.ts",
+    "src/hooks/useServerTime.ts",
+    "src/hooks/useSpeech.ts",
+    "src/hooks/useTodaySet.ts",
+    "src/hooks/useWalletSync.ts",
+    "src/lib/api.ts",
+    "src/lib/api/http.ts",
+    "src/lib/api/lessons.ts",
+    "src/lib/api/payments.ts",
+    "src/lib/api/purchase.ts",
+    "src/lib/api/testapi/httptest.ts",
+    "src/lib/api/time.ts",
+    "src/lib/api/types.ts",
+    "src/lib/api/wallet.ts",
+    "src/lib/attempts.ts",
+    "src/lib/auth/getIdToken.ts",
+    "src/lib/bootstrap.ts",
+    "src/lib/cache/lessons.ts",
+    "src/lib/constants/lessons.ts",
+    "src/lib/curriculum.ts",
+    "src/lib/firebase.ts",
+    "src/lib/firestore/content.ts",
+    "src/lib/firestore/firestoreV1.ts",
+    "src/lib/grammar/helpers.ts",
+    "src/lib/group.ts",
+    "src/lib/home/constants.ts",
+    "src/lib/home/insights.ts",
+    "src/lib/home/types.ts",
+    "src/lib/initial-fetch.ts",
+    "src/lib/jlpt-level.ts",
+    "src/lib/kana/table.ts",
+    "src/lib/normalize.ts",
+    "src/lib/progress/todayQueue.ts",
+    "src/lib/quiz/builders.ts",
+    "src/lib/quiz/distractors.ts",
+    "src/lib/quiz/grammarBuilder.ts",
+    "src/lib/seed.ts",
+    "src/lib/srs-intervals.ts",
+    "src/lib/storage.ts",
+    "src/lib/tts.ts",
+    "src/lib/user-data.ts",
+    "src/logic/stageGate.ts",
+    "src/pages/BuyTodayPage.tsx",
+    "src/pages/ExamFresherPage.tsx",
+    "src/pages/ExamSummaryPage.tsx",
+    "src/pages/FlashcardsPage.tsx",
+    "src/pages/GrammarQuizPage.tsx",
+    "src/pages/GrammarQuizSummaryPage.tsx",
+    "src/pages/GrammarStudyPage.tsx",
+    "src/pages/HomePage.tsx",
+    "src/pages/LoginPage.tsx",
+    "src/pages/OnboardingPage.tsx",
+    "src/pages/QuizPage.tsx",
+    "src/pages/QuizSummaryPage.tsx",
+    "src/pages/SettingsPage.tsx",
+    "src/pages/StudyFlowRouter.tsx",
+    "src/pages/SummaryPage.tsx",
+    "src/routes/walletRoute.tsx",
+    "src/services/StudyPlanV1.decider.ts",
+    "src/services/StudyPlanV1.ts",
+    "src/services/assignExtraV1.ts",
+    "src/services/examsV1.ts",
+    "src/services/onboardingV1.ts",
+    "src/services/profileV1.ts",
+    "src/services/progressMutationV1.ts",
+    "src/services/progressReadV1.ts",
+    "src/services/progressV1.ts",
+    "src/services/srsV1.ts",
+    "src/store/auth.ts",
+    "src/store/session.ts",
+    "src/store/testapi/walletStoretest.ts",
+    "src/store/themeMode.ts",
+    "src/store/topics.ts",
+    "src/store/walletStore.ts",
+    "src/styles/Pages/FlashCardPage.styles.tsx",
+    "src/styles/Pages/GrammarQuizPage.styles.tsx",
+    "src/styles/Pages/GrammarQuizSummaryPage.styles.tsx",
+    "src/styles/Pages/GrammarStudyPage.styles.tsx",
+    "src/styles/Pages/HomePage.styles.tsx",
+    "src/styles/Pages/LoginPage.styles.tsx",
+    "src/styles/Pages/QuizPage.styles.tsx",
+    "src/styles/Pages/QuizSummaryPage.styles.tsx",
+    "src/styles/global.ts",
+    "src/test-utils/renderWithTheme.tsx",
+    "src/test/mem.ts",
+    "src/test/setupTests.ts",
+    "src/types/grammar.ts",
+    "src/types/guards.ts",
+    "src/types/lessonV1.ts",
+    "src/types/quiz.ts",
+    "src/types/session.ts",
+    "src/types/ui.ts",
+    "src/types/userV1.ts",
+    "src/types/vocab.ts",
+    "vite.config.ts",
+    "vitest.config.ts"
+  ],
+  "unusedExports": [],
+  "unusedPublicAssets": [
+    "public/DarkTheme/DTGrammarQuizSummary.png",
+    "public/DarkTheme/DTGrammarStudy.png",
+    "public/DarkTheme/DTHomePage.jpg",
+    "public/DarkTheme/DTHomePageZenGarden.jpg",
+    "public/DarkTheme/DTLoginPage2.png",
+    "public/DarkTheme/DTVocabFC.jpg",
+    "public/LightTheme/LTGrammarQuizSummary.jpg",
+    "public/LightTheme/LTGrammarStudy.jpg",
+    "public/LightTheme/LTHomePage.jpg",
+    "public/LightTheme/LTVocabFC2.jpg",
+    "public/LightTheme/LTVocabFCPage.jpg",
+    "public/coming-soon.png",
+    "public/homepagebg2.jpg",
+    "public/homepagebg3.jpg",
+    "public/kozaLogo.png",
+    "public/kozakadobg5.jpg",
+    "public/kozakadomb1.jpg",
+    "public/kozalogin.png",
+    "public/kozalogin1.png",
+    "public/kozaloginmobile.png",
+    "public/logincardbg.png",
+    "public/popup.png",
+    "public/quizsummarybg.jpg",
+    "public/speaker.svg",
+    "public/vite.svg"
+  ],
+  "duplicateFunctions": [
+    {
+      "hash": "8028afe8",
+      "count": 2,
+      "locations": [
+        {
+          "file": "src/helpers/todayV1.ts",
+          "name": "lastTwo",
+          "line": 33
+        },
+        {
+          "file": "src/logic/stageGate.ts",
+          "name": "lastTwo",
+          "line": 27
+        }
+      ]
+    },
+    {
+      "hash": "777d7fc0",
+      "count": 2,
+      "locations": [
+        {
+          "file": "src/pages/GrammarQuizSummaryPage.tsx",
+          "name": "hasPrompt",
+          "line": 7
+        },
+        {
+          "file": "src/pages/ExamSummaryPage.tsx",
+          "name": "hasPrompt",
+          "line": 9
+        }
+      ]
+    },
+    {
+      "hash": "55377367",
+      "count": 2,
+      "locations": [
+        {
+          "file": "src/services/StudyPlanV1.decider.ts",
+          "name": "day",
+          "line": 13
+        },
+        {
+          "file": "src/services/StudyPlanV1.ts",
+          "name": "day",
+          "line": 37
+        }
+      ]
+    },
+    {
+      "hash": "daacd148",
+      "count": 2,
+      "locations": [
+        {
+          "file": "src/components/AppErrorBoundary.tsx",
+          "name": "getDerivedStateFromError",
+          "line": 14
+        },
+        {
+          "file": "src/components/AppErrorBoundary.tsx",
+          "name": "getDerivedStateFromError",
+          "line": 39
+        }
+      ]
+    }
+  ],
+  "circularDependencies": [],
+  "reactLoopSuspects": [
+    {
+      "file": "src/hooks/useSpeech.ts",
+      "line": 36,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;\n\n    function loadVoices() {\n      const v = window.speechSynthesis.getVoices();\n      if (v && v.len"
+    },
+    {
+      "file": "src/pages/FlashcardsPage.tsx",
+      "line": 46,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n    if (lessonPhase === 'grammar' && stage !== 'grammar') {\n      setStage('grammar');\n    }\n  }, [lessonPhase, stage, setStage])"
+    },
+    {
+      "file": "src/pages/FlashcardsPage.tsx",
+      "line": 53,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => { setFlipped(false); }, [index])"
+    },
+    {
+      "file": "src/hooks/useCountdownV1.ts",
+      "line": 23,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "Left(Math.max(0, seconds));\n  }, [seconds, key]);\n\n  useEffect(() => {\n    if"
+    },
+    {
+      "file": "src/hooks/useCountdownV1.ts",
+      "line": 27,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "onds <= 0) return;\n    let active = true;\n\n    const id = setInterval(() => {\n      if (!active || pausedRef.current) return;\n      setTimeLeft(prev => {\n        if (prev <= 1) {\n          clearInterv"
+    },
+    {
+      "file": "src/components/quiz/Quiz.tsx",
+      "line": 49,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n    submittedRef.current = false;\n    setSubmitted(false);\n    setAnswer(null);\n    setRightsOrderState(computedInitialRights);\n    startTsRef.current = performance.now(); // reset s"
+    },
+    {
+      "file": "src/pages/QuizPage.tsx",
+      "line": 26,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n    const t = setTimeout(() => setBooting(false), 300);\n    return () => clearTimeout(t);\n  }, [])"
+    },
+    {
+      "file": "src/pages/QuizPage.tsx",
+      "line": 57,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n    if (!question) setStage('summary');\n  }, [question, setStage])"
+    },
+    {
+      "file": "src/pages/GrammarStudyPage.tsx",
+      "line": 31,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "); }, [gIndex]);\n\n  // Handlers (stable)\n  const"
+    },
+    {
+      "file": "src/pages/GrammarQuizPage.tsx",
+      "line": 22,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "t(() => setBooting(false), 300); // short, snappy splash\n    return () => clearTimeout(t);\n  }, []);\n    useEffect(() => {\n    if (!booting"
+    },
+    {
+      "file": "src/pages/GrammarQuizPage.tsx",
+      "line": 38,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "Quiz && !question) {\n      setStage('grammarSummary');\n    }\n  }, [booting, hasQuiz, question, setStage]);\n\n  const nextOrSummary = useCallback(()"
+    },
+    {
+      "file": "src/pages/ExamFresherPage.tsx",
+      "line": 54,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "> {\n      try {\n        setLoading(true);\n        setErr(null);\n\n        let pair = lastExamPair ?? (await computePairFromBootstrap());\n        if (!pair) {\n          setErr('Not enough completed less"
+    },
+    {
+      "file": "src/hooks/useWalletSync.ts",
+      "line": 21,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n    if (user) return;\n    useWalletStore.setState({\n      wallet: null,\n      transactions: [],\n      error: null,\n      lastSyncAt: null,\n      loading: false,\n    });\n  }, [user])"
+    },
+    {
+      "file": "src/features/wallet/BuyShardsModal.tsx",
+      "line": 50,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n    if (!open) {\n      setSelectedProduct(null);\n      setClientSecret(null);\n      setOrderId(null);\n      setStatus('catalog');\n      setMessage(null);\n      return;\n    }\n\n    con"
+    },
+    {
+      "file": "src/features/wallet/BuyShardsModal.tsx",
+      "line": 95,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n    if (!open) return;\n    setCatalog(prev => ({ ...prev, loading: true, error: null }));\n    fetchCatalog()\n      .then(response => {\n        console.info('wallet.catalog_loaded', {"
+    },
+    {
+      "file": "src/features/wallet/BuyShardsModal.tsx",
+      "line": 230,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n    setMessage(null);\n  }, [setMessage])"
+    },
+    {
+      "file": "src/pages/LoginPage.tsx",
+      "line": 36,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n    if (!emailModalOpen || typeof window === 'undefined' || typeof document === 'undefined') {\n      return;\n    }\n\n    const handleKeyDown = (event: KeyboardEvent) => {\n      if (ev"
+    },
+    {
+      "file": "src/components/settings/SettingsModal.tsx",
+      "line": 42,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n    setForm(defaults);\n  }, [defaults])"
+    },
+    {
+      "file": "src/components/home/StudySection.tsx",
+      "line": 41,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n    let alive = true;\n    (async () => {\n      try {\n        const [{ loadBootstrap }] = await Promise.all([\n          import('@/lib/bootstrap'),\n        ]);\n        const boot = loa"
+    },
+    {
+      "file": "src/components/animated/flame.tsx",
+      "line": 107,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n    setVars(val);\n    if (containerRef.current) {\n      containerRef.current.style.setProperty(\"--hue-rotate\", `${hueRotateDeg}deg`);\n      containerRef.current.style.setProperty(\"--"
+    },
+    {
+      "file": "src/components/animated/flame.tsx",
+      "line": 115,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => { setVal(clamp(intensity, 3, 11)); }, [intensity])"
+    },
+    {
+      "file": "src/pages/HomePage.tsx",
+      "line": 174,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n    (async () => {\n      const { loadBootstrap, loadBootCatalog } = await import('@/lib/bootstrap');\n      const b = loadBootstrap();\n      setBoot(b);\n      if (b?.catalogLevel) {"
+    },
+    {
+      "file": "src/pages/HomePage.tsx",
+      "line": 190,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n  if (!selectedDate && insights.calendarRecords.length) {\n    const iso = jstTodayISO();\n    const todayRecord =\n      insights.calendarRecords.find(r => r.dateISO === iso) ??"
+    },
+    {
+      "file": "src/pages/HomePage.tsx",
+      "line": 201,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n  if (typeof window === 'undefined') return;\n  const storedLessonStr = window.localStorage.getItem(LOCAL_LESSON_KEY);\n  const storedLesson = storedLessonStr ? Number(storedLessonStr)"
+    },
+    {
+      "file": "src/App.tsx",
+      "line": 149,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n    (async () => {\n      try {\n        const { fetchInitialSnapshot } = await import('@/lib/initial-fetch'); // @dynamic-import\n        const { loadBootstrap, saveBootstrap } = await"
+    },
+    {
+      "file": "src/hooks/useGrammarFlashcard.ts",
+      "line": 21,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n    if (!point?.examples?.length) { setExampleIdx(0); return; }\n    const pick = Math.floor(Math.random() * point.examples.length);\n    setExampleIdx(pick);\n    setFlipped(false);"
+    },
+    {
+      "file": "src/hooks/useIsMobile.ts",
+      "line": 11,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\n    const m = window.matchMedia(`(max-width: ${breakpoint}px)`);\n\n    const update = () => setIsMobile(m.matches);\n\n    update(); // run once at mount\n\n    m.addEventListener('change"
+    },
+    {
+      "file": "src/hooks/useLessonProgressV1.ts",
+      "line": 12,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\nlet mounted = true;\nif (!uid) return;\nsetLoading(true);\ngetLessonProgress(uid)\n.then((p) => mounted && setProgress(p))\n.catch((e) => mounted && setError(e))\n.finally(() => mounted &&"
+    },
+    {
+      "file": "src/hooks/useProfileV1.ts",
+      "line": 13,
+      "kind": "Effect with deps + setState",
+      "why": "Effect updates state and tracks it; ensure guard to avoid loops.",
+      "snippet": "useEffect(() => {\nlet mounted = true;\nif (!uid) return;\nsetLoading(true);\nensureProfile(uid)\n.then((p) => mounted && setProfile(p))\n.catch((e) => mounted && setError(e))\n.finally(() => mounted && setL"
+    },
+    {
+      "file": "src/pages/BuyTodayPage.tsx",
+      "line": 31,
+      "kind": "Top-level setState",
+      "why": "State update during render can cause infinite re-render.",
+      "snippet": "r(null);"
+    },
+    {
+      "file": "src/pages/BuyTodayPage.tsx",
+      "line": 32,
+      "kind": "Top-level setState",
+      "why": "State update during render can cause infinite re-render.",
+      "snippet": "bootstrap for"
+    },
+    {
+      "file": "src/pages/BuyTodayPage.tsx",
+      "line": 57,
+      "kind": "Top-level setState",
+      "why": "State update during render can cause infinite re-render.",
+      "snippet": "v('/flashcards');"
+    },
+    {
+      "file": "src/pages/BuyTodayPage.tsx",
+      "line": 60,
+      "kind": "Top-level setState",
+      "why": "State update during render can cause infinite re-render.",
+      "snippet": "to buy more lessons today.');\n    } finally {\n      setBuy"
+    },
+    {
+      "file": "src/pages/BuyTodayPage.tsx",
+      "line": 62,
+      "kind": "Top-level setState",
+      "why": "State update during render can cause infinite re-render.",
+      "snippet": "nav, setStage]);"
+    }
+  ]
+}

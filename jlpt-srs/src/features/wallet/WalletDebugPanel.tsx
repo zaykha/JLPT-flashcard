@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useWalletContext } from '@/features/wallet/WalletProvider';
 import { usePurchase } from '@/hooks/usePurchase';
 import { usePayments } from '@/hooks/usePayments';
+import { useWalletActions } from '@/hooks/useWalletActions';
 import { friendlyMessage } from '@/lib/api/http';
 
 const isProduction = import.meta.env.PROD;
@@ -15,21 +16,16 @@ export const WalletDebugPanel: React.FC = () => {
   const { wallet, transactions, loading, error, refresh, openBuyModal } = useWalletContext();
   const purchase = usePurchase();
   const { fetchCatalog, beginOrder } = usePayments();
+  const { spend, reward } = useWalletActions();
 
   const latestTransactions = (transactions ?? []).slice(0, 5);
 
-  const lessonsTaken = wallet?.daily?.lessonsTaken ?? 0;
-  const extraUsed = wallet?.daily?.extraLessonsUsed ?? 0;
-  const missedRedeemed = wallet?.daily?.missedLessonsRedeemed ?? 0;
 
   return (
     <Panel>
       <h4>Wallet Debug</h4>
       <Row><span>Shards:</span><strong>{wallet?.shards ?? 0}</strong></Row>
-      <Row><span>Lessons today:</span><strong>{lessonsTaken}</strong></Row>
-      <Row><span>Extra lessons:</span><strong>{extraUsed}</strong></Row>
-      <Row><span>Missed redeemed:</span><strong>{missedRedeemed}</strong></Row>
-      <Row><span>Last reset:</span><strong>{wallet?.lastResetISO ?? '—'}</strong></Row>
+      <Row><span>Updated:</span><strong>{wallet?.updatedAt ? new Date((wallet as any).updatedAt.toMillis?.() ?? 0).toLocaleString('en-US') : '—'}</strong></Row>
       <Buttons>
         <button type="button" onClick={() => void refresh()}>Sync Wallet</button>
         <button type="button" onClick={() => openBuyModal()}>Open Buy Modal</button>
@@ -78,6 +74,44 @@ export const WalletDebugPanel: React.FC = () => {
           Mock Payment Flow
         </button>
       </Buttons>
+      <Buttons>
+        <button
+          type="button"
+          onClick={async () => {
+            setStatus('spend missed…');
+            try {
+              await spend({ action: 'missed_lesson', count: 1, note: 'missed_lesson x1' });
+              setStatus('spent 20 (missed)');
+            } catch (err) { setStatus(String((err as any)?.message || err)); }
+          }}
+        >Spend missed (-20)</button>
+        <button
+          type="button"
+          onClick={async () => {
+            setStatus('spend extra…');
+            try {
+              await spend({ action: 'extra_lesson', count: 1, note: 'extra_lesson x1' });
+              setStatus('spent 25 (extra)');
+            } catch (err) { setStatus(String((err as any)?.message || err)); }
+          }}
+        >Spend extra (-25)</button>
+        <button
+          type="button"
+          onClick={async () => {
+            setStatus('reward streak…');
+            try { await reward({ type: 'streak_7', note: '7-day streak' }); setStatus('reward +5'); }
+            catch (err) { setStatus(String((err as any)?.message || err)); }
+          }}
+        >Reward streak (+5)</button>
+        <button
+          type="button"
+          onClick={async () => {
+            setStatus('reward level…');
+            try { await reward({ type: 'level_complete', note: 'Level complete', level: 'N3' }); setStatus('reward +50'); }
+            catch (err) { setStatus(String((err as any)?.message || err)); }
+          }}
+        >Reward level (+50)</button>
+      </Buttons>
       {loading && <Status>Loading…</Status>}
       {error && <Status data-error>{error}</Status>}
       {status && <Status>{status}</Status>}
@@ -88,10 +122,10 @@ export const WalletDebugPanel: React.FC = () => {
         ) : (
           <ul>
             {latestTransactions.map(tx => (
-              <li key={tx.id}>
+              <li key={tx.id ?? String(i)}>
                 <span>{tx.type}</span>
                 <strong>{tx.amount}</strong>
-                <small>{tx.createdAt ?? '—'}</small>
+                <small>{tx.createdAt ? new Date((tx as any).createdAt.toMillis?.() ?? 0).toLocaleString('en-US') : '—'}</small>
               </li>
             ))}
           </ul>

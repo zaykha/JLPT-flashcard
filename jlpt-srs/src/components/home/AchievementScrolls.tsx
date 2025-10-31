@@ -30,12 +30,12 @@ export const AchievementScrolls: React.FC<Props> = ({ scrolls }) => {
 };
 
 const Wrap = styled.section`
-  border: 2px solid #000;
-  border-radius: 18px;
-  padding: 18px;
-  background:
-    linear-gradient(145deg, rgba(139,107,63,0.18), rgba(111,126,79,0.12)),
-    #fff;
+  // border: 2px solid #000;
+  // border-radius: 18px;
+  // padding: 18px;
+  width:95%;
+  margin:auto;
+
 `;
 
 const Heading = styled.h3`
@@ -57,7 +57,7 @@ const ScrollCard = styled.div<{ $unlocked: boolean }>`
   border: 2px solid #000;
   border-radius: 14px;
   padding: 16px 14px 20px;
-  min-height: 140px;
+  min-height: 120px;
   color: ${({ $unlocked }) => ($unlocked ? '#1f2937' : 'rgba(31,41,55,0.55)')};
   background:
     radial-gradient(circle at top, rgba(255,255,255,0.9), rgba(255,255,255,0.72)),

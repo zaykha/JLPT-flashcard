@@ -246,4 +246,10 @@ export const QuestionArea = styled.div`
 export const QuestionWrap = styled.div``;
 
 /* Floating Submit button for mobile */
-export const FixedSubmit = styled(Btn)``;
+export const FixedSubmit = styled(Btn)`
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 10000;
+  box-shadow: 6px 6px 0 ${({ theme }) => theme.colors.pixelBorder}, 0 8px 24px rgba(0,0,0,0.35);
+`;

@@ -1,0 +1,814 @@
+[
+  {
+    "file": "avatar-01.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-02.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-03.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-04.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-05.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-06.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-07.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-08.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-09.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-10.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-11.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-12.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-13.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-14.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-15.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-16.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-17.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-18.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-19.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-20.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-21.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-22.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-23.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-24.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-25.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-26.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-27.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-28.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-29-neutral.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-29-smile.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-30.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-31.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-32.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-33.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-34.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-35.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-36.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-37.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-38.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-39.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-40.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-41.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-42.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-43.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-44.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-45.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-46.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-47.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-48.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-49-neutral.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-49-smile.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-50.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-51.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-52-neutral.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-52-smile.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-53.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-54.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  },
+  {
+    "file": "avatar-55.svg",
+    "features": {
+      "glasses": false,
+      "head_covering": false,
+      "facial_hair": true
+    },
+    "colors": {
+      "skin": null,
+      "hair": null,
+      "shirt": null
+    },
+    "palette_sample": []
+  }
+]

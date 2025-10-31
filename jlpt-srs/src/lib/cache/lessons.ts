@@ -1,6 +1,7 @@
 import type { LessonCatalog } from '@/lib/api/types';
-import type { JLPTLevelStr } from '@/lib/user-data';
+
 import { kvGet, kvSet, lessonCatalogKey } from '@/lib/storage';
+import type { JLPTLevelStr } from '@/types/userV1';
 
 export type CachedLessonCatalog = LessonCatalog & { cachedAt: number };
 

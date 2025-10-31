@@ -43,21 +43,38 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 export function useWalletContext() {
   const ctx = useContext(WalletContext);
   if (!ctx) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('useWalletContext called outside of WalletProvider; returning fallback value.');
+    // Fallback: read wallet from bootstrap cache when provider is disabled
+    try {
+      const { loadBootstrap } = require('@/lib/bootstrap');
+      const boot = loadBootstrap?.();
+      const bootWallet = (boot?.wallet as any)?.wallet ?? null;
+      const bootTx = (boot?.wallet as any)?.transactions ?? [];
+      const fallback: WalletContextValue = {
+        wallet: bootWallet ?? null,
+        transactions: Array.isArray(bootTx) ? bootTx : [],
+        loading: false,
+        error: null,
+        refresh: async () => {},
+        buyModalOpen: false,
+        openBuyModal: () => {},
+        closeBuyModal: () => {},
+        initialSku: null,
+      };
+      return fallback;
+    } catch {
+      const fallback: WalletContextValue = {
+        wallet: null,
+        transactions: [],
+        loading: false,
+        error: null,
+        refresh: async () => {},
+        buyModalOpen: false,
+        openBuyModal: () => {},
+        closeBuyModal: () => {},
+        initialSku: null,
+      };
+      return fallback;
     }
-    const fallback: WalletContextValue = {
-      wallet: null,
-      transactions: [],
-      loading: false,
-      error: null,
-      refresh: async () => {},
-      buyModalOpen: false,
-      openBuyModal: () => {},
-      closeBuyModal: () => {},
-      initialSku: null,
-    };
-    return fallback;
   }
   return ctx;
 }

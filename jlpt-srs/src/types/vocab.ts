@@ -162,10 +162,11 @@ export function mapVocabDocToWord(
   const english  = (doc.english ?? doc.meaning ?? doc.gloss ?? '').trim();
 
   // topicKey: use explicit doc.topicKey OR infer from lessonTopic OR from an id prefix
-  const topicKey =
-    doc.topic ??
-    opts?.lessonTopic ??
+  const tkRaw =
+    (doc.topic ?? doc.topicKey ?? doc.category ?? doc.tags?.[0]) ||
+    opts?.lessonTopic ||
     inferTopicFromId(doc.id || doc.wordId || '');
+  const topicKey = normalizeTopicKey(String(tkRaw || 'Abstract & Academic'));
 
   return {
     id: String(doc.id ?? doc.wordId ?? crypto.randomUUID()),
@@ -174,7 +175,7 @@ export function mapVocabDocToWord(
     hiragana: hiragana || undefined,
     romaji: romaji || undefined,
     english: english || '',
-    topicKey, // Flashcard uses this for styling
+    topicKey, // Flashcard uses this for styling (canonicalized)
   } as Word;
 }
 

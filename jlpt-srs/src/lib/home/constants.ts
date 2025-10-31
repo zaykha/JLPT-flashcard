@@ -1,4 +1,6 @@
-export const LOCAL_LESSON_KEY = 'jlpt.currentLesson';
+export const LOCAL_LESSON_KEY = 'jlpt.currentLesson'; // legacy (kept for compatibility)
+export const LOCAL_LESSON_NO  = 'jlpt.currentLessonNo';   // number as string
+export const LOCAL_LESSON_DAY = 'jlpt.currentLessonDay';  // YYYY-MM-DD
 
 export const DEFAULT_SCROLLS = [
   {
@@ -12,11 +14,5 @@ export const DEFAULT_SCROLLS = [
     title: 'Scroll of Wisdom',
     unlocked: false,
     description: 'Master 100 words to earn this honor.',
-  },
-  {
-    id: 'silence',
-    title: 'Scroll of Silence',
-    unlocked: false,
-    description: 'Score perfect marks in 5 quizzes in a row.',
-  },
+  }
 ] as const;

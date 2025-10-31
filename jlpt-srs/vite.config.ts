@@ -16,5 +16,14 @@ export default defineConfig({
   server: {
     host: '0.0.0.0', // This exposes the server to the local network
     port: 5173,     // (Or whatever port you are using)
-  }
+    proxy: {
+      // Proxy Netlify functions in dev to avoid CORS
+      '/.netlify/functions': {
+        target: 'http://localhost:8888',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
+  
 })

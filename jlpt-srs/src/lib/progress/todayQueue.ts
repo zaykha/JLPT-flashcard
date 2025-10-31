@@ -18,7 +18,7 @@ export async function ensureTodayQueue(
   progress: LessonProgress,
   catalog: LessonCatalog,
   opts?: { perDay?: number }
-): Promise<string[]> {
+): Promise<Array<{ lessonNo:number; LessonDate:string }>> {
   const perDay = opts?.perDay ?? 2;
   const todayISO = jstTodayISO();
   const ref = doc(db, 'users', uid, 'progress', 'lessons');
@@ -32,10 +32,10 @@ export async function ensureTodayQueue(
       Number.isFinite(lastCompletedNo) ? lastCompletedNo : undefined,
       catalog.lessonRange,
       perDay
-    ).map(String);
+    );
 
     const payload: Partial<LessonProgress> = {
-      current: initial,
+      current: initial.map(n => ({ lessonNo: n, LessonDate: todayISO })),
       currentDateISO: todayISO,
     };
     // upsert (create doc if got deleted)
@@ -43,11 +43,11 @@ export async function ensureTodayQueue(
     if (!snap.exists()) await setDoc(ref, { completed: [], failed: [], ...payload });
     else await updateDoc(ref, payload as any);
 
-    return initial;
+    return payload.current as any;
   }
 
   // same day → use existing queue
-  return progress.current.map(String);
+  return (progress.current || []) as any;
 }
 
 /** Append extra lessons to today's queue (e.g., after purchase) */
@@ -59,8 +59,12 @@ export async function appendToTodayQueue(
   const snap = await getDoc(ref);
   if (!snap.exists()) return;
   const data = snap.data() as LessonProgress;
-  const current = Array.isArray(data.current) ? data.current.map(String) : [];
-  const merged = Array.from(new Set([...current, ...lessonNos.map(String)]));
+  const todayISO = jstTodayISO();
+  const current = Array.isArray(data.current) ? data.current as any[] : [];
+  const merged = [...current];
+  for (const n of lessonNos) {
+    if (!merged.find(x => Number(x.lessonNo) === Number(n))) merged.push({ lessonNo: Number(n), LessonDate: todayISO });
+  }
   await updateDoc(ref, { current: merged } as any);
 }
 
@@ -70,6 +74,6 @@ export async function removeFromTodayQueue(uid: string, lessonNo: number) {
   const snap = await getDoc(ref);
   if (!snap.exists()) return;
   const data = snap.data() as LessonProgress;
-  const pruned = (data.current ?? []).map(String).filter(n => n !== String(lessonNo));
+  const pruned = (data.current ?? []).filter((it: any) => Number(it.lessonNo) !== Number(lessonNo));
   await updateDoc(ref, { current: pruned } as any);
 }

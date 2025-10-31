@@ -5,13 +5,17 @@ export function listProducts(): Promise<ProductsResponse> {
   return apiFetch<ProductsResponse>('/listProducts');
 }
 
-export function createCheckoutOrder(sku: string): Promise<CreateOrderResponse> {
+export function createCheckoutOrder(
+  sku: string,
+  extra?: { priceId?: string; amount?: number; shards?: number }
+): Promise<CreateOrderResponse> {
+  const payload: any = { sku, ...extra };
   return apiFetch<CreateOrderResponse>('/createCheckoutOrder', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ sku }),
+    body: JSON.stringify(payload),
   });
 }
 

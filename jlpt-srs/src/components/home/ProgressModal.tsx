@@ -1,113 +1,88 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import type { Topic, TopicGroup, ProgressBuckets } from '@/types/vocab';
-import { ProgressBar } from '@/components/ui/ProgressBar';
-
-type WordsByLevel = Record<'N1'|'N2'|'N3'|'N4'|'N5', number>;
-
-const LEVEL_TOTALS: WordsByLevel = {
-  N1: 3462,
-  N2: 1831,
-  N3: 1797,
-  N4: 632,
-  N5: 662,
-};
+import type { LessonProgress } from '@/types/lessonV1';
 
 type Props = {
   open: boolean;
   onClose: () => void;
-  groups: TopicGroup[];
-  progress: Record<Topic, ProgressBuckets>;
-  profileLevel: 'N5'|'N4'|'N3'|'N2'|'N1' | null;
-  wordsByLevel: WordsByLevel;
+  lessonProgress: LessonProgress | null | undefined;
 };
 
-export const ProgressModal: React.FC<Props> = ({
-  open,
-  onClose,
-  groups,
-  progress,
-  profileLevel,
-  wordsByLevel,
-}) => {
+export const ProgressModal: React.FC<Props> = ({ open, onClose, lessonProgress }) => {
   if (!open) return null;
 
   const handleBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.currentTarget === e.target) onClose();
   };
 
-  const level = profileLevel ?? 'N5';
-  const levelTotal = LEVEL_TOTALS[level] ?? 0;
-  const learned = wordsByLevel[level] ?? 0;
-  const pct = levelTotal ? Math.min(100, Math.round((learned / levelTotal) * 100)) : 0;
+  const data = lessonProgress ?? { completed: [], failed: [], current: [], examsStats: [] };
+  const counts = {
+    completed: data.completed?.length ?? 0,
+    failed: data.failed?.length ?? 0,
+    current: data.current?.length ?? 0,
+    exams: data.examsStats?.length ?? 0,
+  };
 
-  const sorted = [...groups].sort((a, b) => b.items.length - a.items.length);
+  const recentCompleted = useMemo(() => (data.completed ?? []).slice(-10).reverse(), [data.completed]);
+  const recentFailed = useMemo(() => (data.failed ?? []).slice(-10).reverse(), [data.failed]);
+  const today = useMemo(() => (data.current ?? []).slice(), [data.current]);
 
   return (
     <Backdrop onMouseDown={handleBackdrop}>
       <Modal role="dialog" aria-modal="true" aria-label="Progress overview">
         <Close onClick={onClose} aria-label="Close">✖</Close>
         <ModalHeader>
-          <h3>Progress Overview</h3>
-          <p>Track your topics and JLPT journey.</p>
+          <h3>Study Progress</h3>
+          <p>Snapshot from your lesson progress (Firestore).</p>
         </ModalHeader>
 
         <Body>
-          <LevelCard>
-            <LevelHeading>Level Progress ({level})</LevelHeading>
-            <LevelBarWrap>
-              <LevelBar style={{ width: `${pct}%` }} />
-            </LevelBarWrap>
-            <LevelMeta>
-              {learned} / {levelTotal} words · {pct}% complete
-            </LevelMeta>
-          </LevelCard>
+          <Cards>
+            <StatCard><StatNum>{counts.completed}</StatNum><StatLabel>Completed</StatLabel></StatCard>
+            <StatCard><StatNum>{counts.failed}</StatNum><StatLabel>Missed</StatLabel></StatCard>
+            <StatCard><StatNum>{counts.current}</StatNum><StatLabel>Today</StatLabel></StatCard>
+            <StatCard><StatNum>{counts.exams}</StatNum><StatLabel>Exams</StatLabel></StatCard>
+          </Cards>
 
-          <TopicList>
-            {sorted.map(group => {
-              const detail = progress[group.title as Topic];
-              const segments = detail ? [
-                { key: 'new', label: 'New', count: detail.newCount },
-                { key: 'due', label: 'Due', count: detail.dueCount },
-                { key: 'future', label: 'Queued', count: detail.futureCount },
-              ] : [];
+          <Section>
+            <SectionTitle>Today&apos;s Queue</SectionTitle>
+            <List role="list">
+              {today?.length ? today.map((c, i) => (
+                <Row key={`t-${i}`}>
+                  <b>Lesson {c.lessonNo}</b>
+                  <small> · {c.LessonDate}</small>
+                </Row>
+              )) : <EmptyState>Nothing in today&apos;s queue.</EmptyState>}
+            </List>
+          </Section>
 
-              if (detail) {
-                const entries = Object.entries(detail.byStep)
-                  .filter(([, count]) => count > 0)
-                  .sort((a, b) => Number(a[0]) - Number(b[0]));
-                entries.forEach(([step, count]) => {
-                  segments.push({ key: `s${step}`, label: `S${step}`, count });
-                });
-              }
-
-              const total = group.items.length;
-              const titleSize = group.title.length > 18 ? '0.8rem' : '0.9rem';
-
-              return (
-                <TopicRow key={group.key}>
-                  <TopicMeta>
-                    <TopicName style={{ fontSize: titleSize }}>{group.title}</TopicName>
-                    <TopicCount>{total} words</TopicCount>
-                  </TopicMeta>
-                  <TopicProgress>
-                    {total > 0 ? (
-                      <ProgressBar
-                        segments={segments}
-                        total={total}
-                        height={10}
-                        rounded
-                        compact
-                        showLegend={false}
-                      />
-                    ) : (
-                      <EmptyState>No words yet</EmptyState>
-                    )}
-                  </TopicProgress>
-                </TopicRow>
-              );
-            })}
-          </TopicList>
+          <GridTwo>
+            <Section>
+              <SectionTitle>Recent Completed</SectionTitle>
+              <List role="list">
+                {recentCompleted.length ? recentCompleted.map((e, i) => (
+                  <Row key={`c-${i}`}>
+                    <b>Lesson {e.lessonNo ?? '—'}</b>
+                    <small> · {String(e.completedAt ?? e.lessonId ?? '').slice(0,10)}</small>
+                    {e.quiz?.durationSec != null && <small> · Vocab: {e.quiz.durationSec}s</small>}
+                    {e.grammarQuiz?.durationSec != null && <small> · Grammar: {e.grammarQuiz.durationSec}s</small>}
+                    {e.attempts != null && <small> · Attempts: {e.attempts}</small>}
+                  </Row>
+                )) : <EmptyState>No completed lessons yet.</EmptyState>}
+              </List>
+            </Section>
+            <Section>
+              <SectionTitle>Recent Missed</SectionTitle>
+              <List role="list">
+                {recentFailed.length ? recentFailed.map((e, i) => (
+                  <Row key={`f-${i}`}>
+                    <b>Lesson {e.lessonNo ?? '—'}</b>
+                    <small> · {String(e.attemptedAt ?? e.LessonDate ?? '').slice(0,10)}</small>
+                  </Row>
+                )) : <EmptyState>No missed lessons.</EmptyState>}
+              </List>
+            </Section>
+          </GridTwo>
         </Body>
       </Modal>
     </Backdrop>
@@ -171,15 +146,24 @@ const Body = styled.div`
   padding: 0 24px 28px;
   overflow: hidden auto;
   display: grid;
-  gap: 20px;
+  gap: 18px;
 `;
 
-const LevelCard = styled.div`
-  border: 2px solid #000;
-  border-radius: 16px;
-  padding: 16px;
-  background: linear-gradient(145deg, rgba(17,24,39,0.08), rgba(17,24,39,0.14));
+const Cards = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  @media (max-width: 520px) { grid-template-columns: repeat(2, 1fr); }
 `;
+const StatCard = styled.div`
+  border: 2px solid #000;
+  border-radius: 14px;
+  padding: 12px;
+  text-align: center;
+  background: ${({ theme }) => theme.colors.panel};
+`;
+const StatNum = styled.div` font-size: 1.2rem; font-weight: 800; `;
+const StatLabel = styled.div` font-size: 0.75rem; opacity: 0.8; `;
 
 const LevelHeading = styled.div`
   font-size: 0.78rem;
@@ -209,48 +193,10 @@ const LevelMeta = styled.div`
   color: ${({ theme }) => theme.colors.text};
 `;
 
-const TopicList = styled.div`
-  display: grid;
-  gap: 12px;
-`;
+const Section = styled.section` display: grid; gap: 8px; `;
+const SectionTitle = styled.h4` margin: 0; font-size: .9rem; `;
+const List = styled.div` display: grid; gap: 8px; `;
+const GridTwo = styled.div` display: grid; gap: 14px; grid-template-columns: 1fr 1fr; @media (max-width: 520px) { grid-template-columns: 1fr; }`;
 
-const TopicRow = styled.div`
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: 16px;
-  align-items: center;
-  padding: 12px 14px;
-  border: 1px solid rgba(0,0,0,0.12);
-  border-radius: 14px;
-  background: rgba(255,255,255,0.7);
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-`;
-
-const TopicMeta = styled.div`
-  display: grid;
-  gap: 4px;
-`;
-
-const TopicName = styled.div`
-  font-weight: 700;
-  letter-spacing: 0.02em;
-`;
-
-const TopicCount = styled.div`
-  font-size: 0.72rem;
-  color: ${({ theme }) => theme.colors.textMuted};
-`;
-
-const TopicProgress = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-`;
-
-const EmptyState = styled.div`
-  font-size: 0.72rem;
-  color: ${({ theme }) => theme.colors.textMuted};
-`;
+const Row = styled.div` padding: 10px 12px; border: 2px solid #000; border-radius: 12px; background: ${({ theme }) => theme.colors.sheetBg}; display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; `;
+const EmptyState = styled.div` opacity: 0.7; font-size: 0.85rem; `;

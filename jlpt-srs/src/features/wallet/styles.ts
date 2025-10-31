@@ -23,6 +23,11 @@ export const PanelHeader = styled.header`
     text-transform: uppercase;
     justify-self: center;
   }
+  @media (max-width: 540px) {
+    grid-template-columns: 1fr;
+    row-gap: 8px;
+    h1 { justify-self: start; }
+  }
 `;
 
 export const PrimaryButton = styled.button`
@@ -46,7 +51,7 @@ export const PrimaryButton = styled.button`
 `;
 
 export const GhostButton = styled(PrimaryButton)`
-  background: rgba(255,255,255,0.9);
+  background: ${({ theme }) => theme.colors.bg};
   color: ${({ theme }) => theme.colors.text};
 `;
 
@@ -56,8 +61,12 @@ export const BalanceBadge = styled.div`
   gap: 8px;
   padding: 8px 12px;
   border-radius: 999px;
-  border: 2px solid #000;
-  background: rgba(255,255,255,0.88);
+  border: 2px solid ${({ theme }) => theme.colors.pixelBorder};
+  box-shadow:
+    inset 0 0 0 2px ${({ theme }) => theme.colors.pixelBorder},
+    0 3px 6px rgba(0,0,0,0.35);
+  background: ${({ theme }) => theme.colors.bg};
+  margin: 10px auto;
   span[role='img'] { font-size: 20px; }
   strong { font-family: ${({ theme }) => theme.fonts.heading}; font-size: 1.4rem; }
 `;
@@ -72,10 +81,11 @@ export const SectionTitle = styled.h2`
 
 export const InfoStrip = styled.div`
   border-radius: 14px;
-  border: 1px dashed rgba(0,0,0,0.2);
+  border: 1px dashed ${({ theme }) => theme.colors.pixelBorder};
   padding: 12px 14px;
-  background: rgba(255,255,255,0.75);
+  background: ${({ theme }) => theme.colors.bg};
   font-size: 0.8rem;
+  color: ${({ theme }) => theme.colors.primary};
 `;
 
 export const ModalBackdrop = styled.div`
@@ -97,6 +107,7 @@ export const ModalCard = styled.div`
   padding: 24px;
   display: grid;
   gap: 18px;
+  color: ${({ theme }) => theme.colors.text};
 `;
 
 export const ModalHeader = styled.div`
@@ -137,7 +148,7 @@ export const HelperText = styled.p`
 
 export const Divider = styled.hr`
   border: none;
-  border-top: 1px dashed rgba(0,0,0,0.1);
+  border-top: 1px dashed ${({ theme }) => theme.colors.border};
 `;
 
 export const Spinner = styled.div`

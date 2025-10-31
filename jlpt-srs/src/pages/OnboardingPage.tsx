@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useAuth } from '@/store/auth';
-import { upsertProfile, type JLPTLevelStr } from '@/lib/user-data';
+// import { upsertProfile, getLessonProgress, type JLPTLevelStr } from '@/lib/user-data';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
+import type { JLPTLevelStr } from '@/types/userV1';
+import { upsertProfile } from '@/services/profileV1';
+import { AvatarPickerResponsive } from '@/components/animated/AvatarPicker';
+
+// import { getLessonProgress } from '@/services/progressV1';
+// import { createInitialLessonProgress } from '@/services/onboardingV1';
+// import { JLPT_LEVEL_RANGES, PER_DAY_DEFAULT } from '@/helpers/levelsV1';
+// import { ensureStudyPlan } from '@/services/StudyPlanV1';
 
 const levels: JLPTLevelStr[] = ['N5', 'N4', 'N3', 'N2', 'N1'];
 
@@ -51,13 +59,18 @@ const Panel = styled.section`
   position: relative;
   animation: ${glowPulse} 3.2s ease-in-out infinite;
   image-rendering: pixelated;
+
+  @media (max-width: 600px) {
+    border-radius: 12px;
+    padding: 14px;
+  }
 `;
 
 const PanelHeader = styled.h2`
   font-family: ${({ theme }) => theme.fonts.heading};
-  font-size: clamp(18px, 2.6vw, 22px);
+  font-size: clamp(18px, 4.4vw, 22px);
   color: ${({ theme }) => theme.colors.primary};
-  margin: 0 0 16px;
+  margin: 0 0 12px;
   letter-spacing: .5px;
   text-shadow: 0 1px 0 #00000022;
 `;
@@ -66,44 +79,46 @@ const PanelHeader = styled.h2`
 const Grid = styled.div`
   display: grid;
   gap: 18px;
+
+  @media (max-width: 600px) {
+    gap: 14px;
+  }
 `;
 
 const Field = styled.label`
   display: grid;
   gap: 8px;
   font-family: ${({ theme }) => theme.fonts.body};
-  font-size: 13px;
+  font-size: clamp(12px, 2.8vw, 13px);
   color: ${({ theme }) => theme.colors.textMuted};
+
+  small {
+    font-size: clamp(11px, 2.6vw, 12px);
+    line-height: 1.35;
+  }
 `;
 
 const Input = styled.input`
   width: 100%;
   font-family: ${({ theme }) => theme.fonts.body};
-  font-size: 14px;
+  font-size: clamp(14px, 3.6vw, 16px);
   padding: 10px 12px;
   border-radius: 10px;
   border: 2px solid ${({ theme }) => theme.colors.border};
   background: #f9fafb;
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme }) => theme.colors.primary};
   outline: none;
   transition: 120ms ease;
+
   &:focus {
     border-color: ${({ theme }) => theme.colors.secondary};
     background: #ffffff;
   }
 `;
 
-const Fieldset = styled.fieldset`
-  margin: 0;
-  padding: 0;
-  border: 0;
-  display: grid;
-  gap: 10px;
-`;
-
 const Legend = styled.span`
   font-family: ${({ theme }) => theme.fonts.body};
-  font-size: 13px;
+  font-size: clamp(11px, 2.4vw, 13px);
   color: ${({ theme }) => theme.colors.textMuted};
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -115,43 +130,119 @@ const LevelGrid = styled.div`
   gap: 12px;
 
   @media (max-width: 640px) {
-    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 10px;
   }
 `;
 
 const LevelButton = styled(Button)`
   aspect-ratio: 1;
-  font-size: clamp(16px, 3.4vw, 20px);
+  font-size: clamp(14px, 4.2vw, 18px);
   letter-spacing: 0.14em;
   padding: 0;
+`;
+
+const Fieldset = styled.fieldset`
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  gap: 10px;
 `;
 
 const Actions = styled.div`
   margin-top: 12px;
 `;
 
-/** ——— component ——— */
 export const OnboardingPage: React.FC = () => {
   const { user } = useAuth();
   const nav = useNavigate();
   const [nickname, setNickname] = useState('');
-  const [skillLevel, setSkillLevel] = useState<JLPTLevelStr | null>(null);
+  const [skillLevel, setSkillLevel] = useState<JLPTLevelStr>('N5');
   const [busy, setBusy] = useState(false);
 
+  //avatar state
+  const [avatarFile, setAvatarFile] = useState<string>('');
+
   const nicknameIsValid = /^[A-Za-z0-9 _-]{3,20}$/.test(nickname.trim());
-  const canSubmit = !busy && nicknameIsValid && !!skillLevel;
+  const canSubmit = !busy && nicknameIsValid && !!skillLevel && !!avatarFile;
 
   async function save() {
     if (!user || !canSubmit || !skillLevel) return;
     setBusy(true);
-    const safeNickname = nickname.trim();
-    await upsertProfile(user.uid, {
-      nickname: safeNickname,
-      jlptLevel: skillLevel
-    });
-    setBusy(false);
-    nav('/', { replace: true });
+
+    try {
+      const safeNickname = nickname.trim();
+
+      // 1) Upsert profile (persist avatar selection)
+      await upsertProfile(user.uid, {
+        nickname: safeNickname,
+        jlptLevel: skillLevel as JLPTLevelStr,
+        avatarKey: avatarFile,                // e.g. "avatar-03"
+      });
+
+      // 2) Ensure study queue + 2.5 bootstrap sync (unchanged)
+      const [{ loadBootCatalog }, { ensureDailyQueue }, { syncLessonProgressFromFirestore }, { ensureWalletDoc }] = await Promise.all([
+        import('@/lib/bootstrap'),
+        import('@/services/StudyPlanV1'),
+        import('@/lib/synLessonProgress'),
+        import('@/services/walletV1'),
+      ]);
+
+      const cat = await loadBootCatalog(skillLevel as JLPTLevelStr);
+      const FALLBACK: Record<JLPTLevelStr, { start: number; end: number }> = {
+        N5: { start: 1, end: 66 },
+        N4: { start: 67, end: 129 },
+        N3: { start: 130, end: 309 },
+        N2: { start: 310, end: 492 },
+        N1: { start: 493, end: 838 },
+      };
+      const range =
+        cat && cat.lessonRange && typeof cat.lessonRange.start === 'number' && typeof cat.lessonRange.end === 'number'
+          ? { start: cat.lessonRange.start, end: cat.lessonRange.end }
+          : FALLBACK[skillLevel as JLPTLevelStr];
+
+      if (range) {
+        await ensureDailyQueue(user.uid, { levelRange: range, perDay: 2 });
+      }
+
+      // Ensure wallet doc exists (zero balance) then sync progress
+      try { await ensureWalletDoc(user.uid); } catch (e) { console.warn('[Onboarding] ensureWalletDoc failed (non-fatal)', e); }
+      try { await syncLessonProgressFromFirestore(user.uid); } catch {}
+
+      // 3) Mirror to bootstrap cache (include avatar)
+      try {
+        const { loadBootstrap, saveBootstrap } = await import('@/lib/bootstrap');
+        const boot = loadBootstrap() ?? {};
+        saveBootstrap({
+          ...boot,
+          profile: {
+            ...(boot as any).profile,
+            uid: user.uid,
+            nickname: safeNickname,
+            jlptLevel: skillLevel as JLPTLevelStr,
+            avatarKey: avatarFile,
+            accountType: (boot as any).profile?.accountType ?? 'free',
+            createdAt: (boot as any).profile?.createdAt ?? Date.now(),
+            updatedAt: Date.now(),
+          },
+          cachedAt: Date.now(),
+      } as any);
+      } catch (e) {
+        console.warn('[Onboarding] saveBootstrap skipped', e);
+      }
+
+      // 4) done
+      try {
+        localStorage.setItem('koza.onb.ok', '1');
+        localStorage.setItem(`koza.onb.ok.${user.uid}`, '1');
+      } catch {}
+      nav('/', { replace: true });
+    } catch (err) {
+      console.error('[Onboarding] save failed', err);
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -172,15 +263,13 @@ export const OnboardingPage: React.FC = () => {
               aria-label="Nickname"
               maxLength={20}
             />
-            <small>
-              Use 3-20 letters, numbers, spaces, _ or - characters.
-            </small>
+            <small>Use 3-20 letters, numbers, spaces, _ or - characters.</small>
           </Field>
 
           <Fieldset>
             <Legend>JLPT level</Legend>
             <LevelGrid role="group" aria-label="Select JLPT level">
-              {levels.map((level) => (
+              {(['N5', 'N4', 'N3', 'N2', 'N1'] as JLPTLevelStr[]).map((level) => (
                 <LevelButton
                   key={level}
                   type="button"
@@ -196,21 +285,21 @@ export const OnboardingPage: React.FC = () => {
             </LevelGrid>
           </Fieldset>
 
+          <Fieldset>
+            <Legend>Avatar</Legend>
+              <AvatarPickerResponsive
+                value={avatarFile}
+                onChange={setAvatarFile}
+              />
+          </Fieldset>
+
           <Actions>
-            <Button
-              type="button"
-              variant="primary"
-              size="lg"
-              block
-              onClick={save}
-              disabled={!canSubmit}
-            >
+            <Button type="button" variant="primary" size="lg" block onClick={save} disabled={!canSubmit}>
               {busy ? 'Saving…' : 'Save & Continue'}
             </Button>
           </Actions>
         </Grid>
       </Panel>
-
     </Screen>
   );
 };

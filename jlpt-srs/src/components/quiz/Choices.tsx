@@ -52,6 +52,9 @@ const ChoiceButton = styled(Btn).attrs<{ $selected: boolean }>(p => ({
   min-height: 56px;
   @media (min-width: 520px) { min-height: 64px; }
 
+  /* Do not uppercase choice labels */
+  text-transform: none;
+
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -74,6 +77,7 @@ const ChoiceText = styled.span`
   font-family: ${({ theme }) => theme.fonts.mono};
   font-size: 1rem;
   // font-size: clamp(16px, 4vw, 18px);
+  text-transform: none;
 `;
 
 // Basic CJK detector (Hiragana, Katakana, CJK Unified Ideographs)

@@ -4,10 +4,18 @@ import type { WalletTransaction } from '@/lib/api/types';
 
 const relativeFormatter = new Intl.RelativeTimeFormat('en-US', { numeric: 'auto' });
 
-function formatRelative(timestamp: number | null): { label: string; title: string } {
-  if (!timestamp) return { label: '—', title: 'Unknown date' };
+function toMillis(ts: any): number | null {
+  if (!ts) return null;
+  if (typeof ts === 'number') return ts;
+  if (typeof ts?.toMillis === 'function') return ts.toMillis();
+  return null;
+}
+
+function formatRelative(timestamp: any): { label: string; title: string } {
+  const ms = toMillis(timestamp);
+  if (!ms) return { label: '—', title: 'Unknown date' };
   const now = Date.now();
-  const diff = timestamp - now;
+  const diff = ms - now;
   const abs = Math.abs(diff);
   const minute = 60 * 1000;
   const hour = 60 * minute;
@@ -31,7 +39,7 @@ function formatRelative(timestamp: number | null): { label: string; title: strin
 
   return {
     label: relativeFormatter.format(value, unit),
-    title: new Date(timestamp).toLocaleString('en-US'),
+    title: new Date(ms).toLocaleString('en-US'),
   };
 }
 
@@ -49,7 +57,7 @@ export const TransactionList: React.FC<Props> = ({ transactions, limit = 10 }) =
   return (
     <List>
       {entries.map(tx => {
-        const { label, title } = formatRelative(tx.createdAt ?? null);
+        const { label, title } = formatRelative(tx.createdAt);
         const isDebit = tx.amount < 0;
         const amount = `${isDebit ? '' : '+'}${tx.amount}`;
         return (
@@ -59,8 +67,8 @@ export const TransactionList: React.FC<Props> = ({ transactions, limit = 10 }) =
               <strong>{tx.type}</strong>
             </div>
             <Amount data-direction={isDebit ? 'debit' : 'credit'}>{amount}</Amount>
-            {tx.payload ? (
-              <Payload>{JSON.stringify(tx.payload)}</Payload>
+            {('note' in tx && (tx as any).note) ? (
+              <Payload>{String((tx as any).note)}</Payload>
             ) : null}
           </li>
         );

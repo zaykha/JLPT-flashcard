@@ -30,50 +30,224 @@ export type TopicKey =
   | 'people' | 'places' | 'food' | 'time' | 'travel' | 'school'
   | 'work' | 'feelings' | 'body' | 'numbers' | 'Others';
 
-  export const theme: DefaultTheme = {
-    colors: {
-      primary: "#8B6B3F",
-      secondary: "#6F7E4F",
-      text: "#161616",
-      textMuted: "#6B7280",
-      sheetBg: "#FFFFFF",
-      border: "rgba(0,0,0,0.08)",
+const commonBase = {
+  fonts: {
+    heading: "'Press Start 2P', 'Noto Serif JP', serif",
+    body: "'Press Start 2P', 'Noto Sans JP', system-ui, -apple-system, Arial, sans-serif",
+    mono: "'VT323', ui-monospace, SFMono-Regular, Menlo, monospace",
+  },
+  radii: { pill: '999px', card: '16px' },
+  radius: { sm: '6px', md: '10px', lg: '14px', xl: '18px', pill: '9999px' },
+  shadow: {
+    card: '0 6px 16px rgba(0,0,0,0.18)',
+    insetCrisp: 'inset 0 0 0 1px rgba(0,0,0,0.18)',
+  },
+  gradient: {
+    emeraldCyan: 'linear-gradient(135deg, #10b981, #06b6d4)',
+    slate: 'linear-gradient(145deg, #1f2937, #374151)',
+    green: 'linear-gradient(145deg, #166534, #15803d)',
+    torii: 'linear-gradient(135deg, #D44D2D, #8B1E1E)',
+    indigoNight: 'linear-gradient(135deg, #0F172A, #1A2A4A)',
+  },
+  topicGradients,
+  textures: {
+    scanlines: `repeating-linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.12) 0px,
+      rgba(0,0,0,0.12) 1px,
+      rgba(0,0,0,0) 2px,
+      rgba(0,0,0,0) 4px
+    )`,
+    dither: `repeating-linear-gradient(
+      45deg,
+      rgba(255,255,255,0.06) 0 2px,
+      rgba(0,0,0,0.06) 2px 4px
+    )`,
+    border8: '0 0 0 4px rgba(0,0,0,0.2), 0 0 0 8px rgba(255,255,255,0.06)',
+    crtMask: `radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0, rgba(0,0,0,0.05) 70%, rgba(0,0,0,0.15) 100%)`,
+    washi: `url('/assets/textures/washi-fibers.png')`,
+    pixelShadow: `drop-shadow(0 1px 0 #00000033) drop-shadow(0 2px 0 #00000022)`,
+  },
+  space: [0,4,8,12,16,20,24,32,40,48],
+  z: { header: 10, modal: 1000, tooltip: 1100 },
+} as const;
+
+// 🕊️ LIGHT THEME
+export const lightTheme: DefaultTheme = {
+  ...commonBase,
+  colors: {
+    primary:  '#8B6B3F',
+    secondary:'#6F7E4F',
+    accent:   '#D44D2D',
+    sakura:   '#F2B6C1',
+    indigo:   '#1A2A4A',
+    gold:     '#C8A646',
+    bg:       '#F7F3E8',
+    panel:    '#FFFFFF',
+    sheetBg:  '#FFFFFF',
+    text:     '#161616',
+    textMuted:'#6B7280',
+    onPrimary:'#FFFFFF',
+    onAccent: '#FFF7F5',
+    success:  '#2E7D32',
+    warning:  '#B26A00',
+    danger:   '#C0352B',
+    border:    'rgba(0,0,0,0.12)',
+    borderDark:'rgba(0,0,0,0.32)',
+    pixelBorder:'#0F172A',
+  },
+  color: {
+    text:   '#161616',
+    muted:  '#6B7280',
+    border: 'rgba(0,0,0,0.12)',
+    card:   '#FFFFFF',
+    panel:  '#FFFFFF',
+    accent: '#D44D2D',
+    danger: '#C0352B',
+  },
+  components: {
+    button: {
+      primary:   { bg: '#8B6B3F', fg: '#FFFFFF', hover: '#7B5E38', active: '#6E5331' },
+      secondary: { bg: '#6F7E4F', fg: '#FFFFFF', hover: '#627045', active: '#55633C' },
+      accent:    { bg: '#D44D2D', fg: '#FFF7F5', hover: '#C04124', active: '#A6361D' },
+      ghost:     { bg: 'transparent', fg: '#1A2A4A', hoverBg: 'rgba(26,42,74,0.06)' },
     },
-    fonts: {
-      heading: "'Press Start 2P', 'Noto Serif JP', serif",
-      body: "'Press Start 2P', 'Noto Sans JP', system-ui, -apple-system, Arial, sans-serif",
+    tag: {
+      sakura: { bg: '#FCE7EF', fg: '#9C3B60' },
+      indigo: { bg: '#E6ECF7', fg: '#1A2A4A' },
+      gold:   { bg: '#FBF6E6', fg: '#8B6B3F' },
     },
-    radii: { pill: "999px", card: "24px" },
-    radius: { sm:'8px', md:'12px', lg:'16px', xl:'20px', pill:'9999px' },
-    shadow: { card: '0 10px 20px rgba(0,0,0,0.25)' },
-    gradient: {
-      emeraldCyan: 'linear-gradient(135deg, #10b981, #06b6d4)',
-      slate: 'linear-gradient(145deg, #1f2937, #374151)',
-      green: 'linear-gradient(145deg, #166534, #15803d)',
+    card: {
+      bg: '#FFFFFF',
+      border: '1px solid rgba(0,0,0,0.12)',
+      headerBg: '#F9FAFB',
+      paperImage: '/ui/card-paper-light.png',
     },
-    topicGradients,
-    textures: {
-      scanlines: `repeating-linear-gradient(
-        to bottom,
-        rgba(0,0,0,0.15) 0px,
-        rgba(0,0,0,0.15) 1px,
-        rgba(0,0,0,0) 2px,
-        rgba(0,0,0,0) 4px
-      )`,
-      dither: `repeating-linear-gradient(
-        45deg,
-        rgba(255,255,255,0.06) 0 2px,
-        rgba(0,0,0,0.06) 2px 4px
-      )`,
-      border8: '0 0 0 4px rgba(0,0,0,0.2), 0 0 0 8px rgba(255,255,255,0.06)',
+    progress: {
+      track: '#E5E7EB',
+      fill:  'linear-gradient(90deg, #F2B6C1, #F6E8C8)',
     },
-    color: {
-      text: 'var(--text)',
-      muted: 'var(--muted)',
-      border: 'var(--border)',
-      card: 'var(--card)',
-      panel: 'var(--panel)',
-      accent: 'var(--accent)',
-      danger: 'var(--danger)',
+    quiz: {
+      correct: '#2E7D32',
+      incorrect: '#C0352B',
+      timer: '#1A2A4A',
+      highlight: '#F2B6C1',
     },
-  };
+    modal: {
+      backdrop: 'rgba(0,0,0,0.55)',
+      // put this parchment in /public/assets/ui/parchment-frame.png (or your path)
+      frameImage: '/ui/parchment-frame.png',
+      frameSlice: 120,  // adjust to your image
+      frameWidth: 36,   // visual border thickness
+      innerBg: '#F6E8C8',
+      shadow: '0 14px 36px rgba(0,0,0,.45)',
+    }
+  },
+  backgrounds: {
+    LoginPage: "/LightTheme/LTLoginPage.jpg",
+    HomePage: "/LightTheme/LTHomePageZenGarden.jpg",
+    FlashcardsPage: "/LightTheme/LTVocabFC1.jpg",
+    GrammarStudyPage: "/LightTheme/LTVocabFC1.jpg",
+    QuizPage: "/LightTheme/LTVocabQuizPage.jpg",
+    GrammarQuizPage: "/LightTheme/LTGrammarQuiz.png",
+    QuizSummaryPage: "/LightTheme/LTQuizSummary.jpg",
+    GrammarQuizSummaryPage: "/LightTheme/LTQuizSummary.jpg",
+    SummaryPage: "/assets/bg/golden_scroll_ceremony_light.png",
+    SettingsPage: "/assets/bg/settings_paper_light.png",
+    OnboardingPage: "/assets/bg/onboarding_edo_light.png",
+    StudyFlowRouter: "/assets/bg/study_flow_light.png",
+  }
+};
+
+// 🌙 DARK THEME
+export const darkTheme: DefaultTheme = {
+  ...commonBase,
+  colors: {
+    primary:  '#8B6B3F',
+    secondary:'#6F7E4F',
+    accent:   '#E25A3A',
+    sakura:   '#F2B6C1',
+    indigo:   '#A9B9D9',
+    gold:     '#D4BA5B',
+    bg:       '#0B1220',
+    panel:    '#111827',
+    sheetBg:  '#0F172A',
+    text:     '#F3F4F6',
+    textMuted:'#9CA3AF',
+    onPrimary:'#1C1C1C',
+    onAccent: '#1C0E0B',
+    success:  '#4CAF50',
+    warning:  '#D79A22',
+    danger:   '#F0523D',
+    border:    'rgba(255,255,255,0.12)',
+    borderDark:'rgba(255,255,255,0.24)',
+    pixelBorder:'#93A0BC',
+  },
+  color: {
+    text:   '#F3F4F6',
+    muted:  '#9CA3AF',
+    border: 'rgba(255,255,255,0.12)',
+    card:   '#111827',
+    panel:  '#111827',
+    accent: '#E25A3A',
+    danger: '#F0523D',
+  },
+  shadow: {
+    card: '0 8px 20px rgba(0,0,0,0.5)',
+    insetCrisp: 'inset 0 0 0 1px rgba(255,255,255,0.08)',
+  },
+  components: {
+    button: {
+      primary:   { bg: '#8B6B3F', fg: '#1C1C1C', hover: '#A38254', active: '#6E5331' },
+      secondary: { bg: '#6F7E4F', fg: '#0E0E0E', hover: '#829458', active: '#55633C' },
+      accent:    { bg: '#E25A3A', fg: '#130503', hover: '#C84124', active: '#A8381F' },
+      ghost:     { bg: 'transparent', fg: '#E5E7EB', hoverBg: 'rgba(255,255,255,0.06)' },
+    },
+    tag: {
+      sakura: { bg: '#3A2530', fg: '#F2B6C1' },
+      indigo: { bg: '#1C2842', fg: '#A9B9D9' },
+      gold:   { bg: '#2E2615', fg: '#D4BA5B' },
+    },
+    card: {
+      bg: '#111827',
+      border: '1px solid rgba(255,255,255,0.08)',
+      headerBg: '#0F172A',
+      paperImage: '/ui/card-paper-dark.png',
+    },
+    progress: {
+      track: '#1F2937',
+      fill:  'linear-gradient(90deg, #22c55e, #3b82f6)',
+    },
+    quiz: {
+      correct: '#4CAF50',
+      incorrect: '#F0523D',
+      timer: '#D4BA5B',
+      highlight: '#2B1C2A',
+    },
+    modal: {
+      backdrop: 'rgba(0,0,0,0.65)',
+      // Use dark parchment frame in dark theme
+      frameImage: '/ui/parchment-frame-Dark.png',
+      frameSlice: 120,
+      frameWidth: 36,
+      innerBg: '#EBDDBB',
+      shadow: '0 16px 40px rgba(0,0,0,.6)',
+    }
+  },
+  backgrounds: {
+    LoginPage: "/DarkTheme/DTLoginPage.png",
+    HomePage: "/DarkTheme/DTHomePage2.png",
+    FlashcardsPage: "/DarkTheme/DTFlashCard.png",
+    GrammarStudyPage: "/DarkTheme/DTFlashCard.png",
+    QuizPage: "/DarkTheme/DTQuizPage.png",
+    GrammarQuizPage: "/DarkTheme/DTGrammarQuiz.png",
+    QuizSummaryPage: "/DarkTheme/DTQuizSummary.png",
+    GrammarQuizSummaryPage: "/DarkTheme/DTQuizSummary.png",
+    SummaryPage: "/assets/bg/golden_scroll_ceremony_dark.png",
+    SettingsPage: "/assets/bg/settings_paper_dark.png",
+    OnboardingPage: "/assets/bg/onboarding_edo_dark.png",
+    StudyFlowRouter: "/assets/bg/study_flow_dark.png",
+  }
+};
+
+export type AppTheme = typeof darkTheme;
