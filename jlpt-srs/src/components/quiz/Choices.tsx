@@ -1,5 +1,6 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import { Btn } from '@/styles/Pages/FlashCardPage.styles';
 
 type Props = {
   choices: string[];
@@ -22,7 +23,7 @@ export const Choices: React.FC<Props> = ({ choices, answer, onSelect, disabled }
             onSelect(choice);
           }}
         >
-          {choice}
+          <ChoiceText>{choice}</ChoiceText>
         </ChoiceButton>
       ))}
     </List>
@@ -31,27 +32,49 @@ export const Choices: React.FC<Props> = ({ choices, answer, onSelect, disabled }
 
 const List = styled.div`
   display: grid;
-  gap: 10px;
+  gap: 12px;
   grid-template-columns: 1fr;
   @media (min-width: 520px) {
     grid-template-columns: 1fr 1fr;
   }
 `;
 
-const ChoiceButton = styled.button<{ $selected: boolean }>`
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #374151;
-  color: white;
-  cursor: pointer;
-  background: ${({ $selected }) =>
-    $selected ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.08)'};
-  &:hover {
-    background: ${({ $selected }) =>
-      $selected ? 'rgba(255,255,255,0.26)' : 'rgba(255,255,255,0.16)'};
-  }
+// Reuse the Flashcard Btn design; primary when selected, secondary otherwise
+const ChoiceButton = styled(Btn).attrs<{ $selected: boolean }>(p => ({
+  $variant: p.$selected ? 'primary' : 'secondary',
+}))<{$selected: boolean}>`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 14px 16px;
+  min-height: 56px;
+  @media (min-width: 520px) { min-height: 64px; }
+
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
+
+  /* Override selected color to Sakura */
+  ${({ $selected, theme }) => $selected && css`
+    background: ${theme.colors.sakura};
+    color: black;
+  `}
 `;
+
+// Unified font styling for consistent look across EN/JP
+const ChoiceText = styled.span`
+  // display: inline-block;
+  // width: 100%;
+  // line-height: 1.25;
+  // word-break: break-word;
+  // white-space: normal;
+  font-family: ${({ theme }) => theme.fonts.mono};
+  font-size: 1rem;
+  // font-size: clamp(16px, 4vw, 18px);
+`;
+
+// Basic CJK detector (Hiragana, Katakana, CJK Unified Ideographs)
+const HAS_CJK = /[\u3040-\u30FF\u3400-\u9FFF]/;
