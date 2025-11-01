@@ -43,6 +43,8 @@ import { jstTodayISO } from '@/helpers/dateV1';
 import type { JLPTLevelStr } from '@/types/userV1';
 import { SrsUnlockCard } from '@/components/srs/srsUnlockCard';
 import { Btn } from '@/styles/Pages/FlashCardPage.styles';
+import { FooterNav } from '@/styles/Pages/Marketing/Shared';
+import { Link } from 'react-router-dom';
 
 
 // ---------- helpers (pure) ----------
@@ -502,6 +504,14 @@ export const HomePage: React.FC = () => {
             {/* <SrsUnlockCard /> */}
             <ExtraCurricular onOpenModal={({ title, msg }) => openPopup(title, msg)} />
             {/* <AchievementScrolls scrolls={[...DEFAULT_SCROLLS]} /> */}
+            <FooterNav aria-label="Site links" style={{ marginTop: 24 }}>
+              <Link to="/about">About</Link>
+              <Link to="/contact">Contact</Link>
+              <Link to="/privacy">Privacy</Link>
+              <Link to="/terms">Terms</Link>
+              <Link to="/refunds">Refunds</Link>
+              <Link to="/commerce">Commerce</Link>
+            </FooterNav>
           </LeftColumn>
 
           <RightColumn>
@@ -612,6 +622,7 @@ export const HomePage: React.FC = () => {
             <Btn $variant="primary" onClick={async () => { setShowLogoutConfirm(false); await signOutUser(); }}>Sign out</Btn>
           </ModalActions>
         </ModalRoot>
+      
     </Screen>
   );
 };

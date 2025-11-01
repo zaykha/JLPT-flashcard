@@ -205,7 +205,20 @@ export const Legal = styled.p`
 
   a { color: ${({ theme }) => theme.colors.primary}; text-decoration: none; }
 `;
+export const Legal1 = styled.div`
+  margin-top: 8;
+  display: flex; 
+  gap: 12px; 
+  flex-wrap: wrap; 
+  justify-content: center; 
+  z-index: 2; 
+  position: relative;
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: clamp(10px, 2.8vw, 12px);
+  // line-height: 1.3;
 
+  a { color: ${({ theme }) => theme.colors.primary}; text-decoration: none; }
+`;
 // ===== Modal =====
 export const ModalOverlay = styled.div`
   position: fixed; inset: 0; z-index: 20;

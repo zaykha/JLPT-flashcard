@@ -17,6 +17,12 @@ import { WalletPage } from './features/wallet/WalletPage';
 import PurchasePage from './pages/PurchasePage';
 import SettingsPage from './pages/SettingsPage';
 import ReviewLessonPage from './pages/ReviewLessonPage';
+import AboutPage from '@/pages/Marketing/AboutPage';
+import ContactPage from '@/pages/Marketing/ContactPage';
+import PrivacyPage from '@/pages/Marketing/PrivacyPage';
+import RefundsPage from '@/pages/Marketing/RefundsPage';
+import TermsPage from '@/pages/Marketing/TermsPage';
+import CommercePage from '@/pages/Marketing/CommercePage';
 
 function Protected({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -175,6 +181,13 @@ export default function App() {
         <Route path="/wallet" element={<Protected><RequireProfile><WalletPage /></RequireProfile></Protected>} />
         <Route path="/purchase" element={<Protected><RequireProfile><PurchasePage /></RequireProfile></Protected>} />
         <Route path="/settings" element={<Protected><RequireProfile><SettingsPage /></RequireProfile></Protected>} />
+        {/* Public marketing/legal pages */}
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/refunds" element={<RefundsPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/commerce" element={<CommercePage />} />
         <Route
           path="/review-lesson/:lessonNos"
           element={

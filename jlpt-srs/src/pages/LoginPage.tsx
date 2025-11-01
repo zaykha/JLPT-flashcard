@@ -1,10 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { FooterNav } from '@/styles/Pages/Marketing/Shared';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/store/auth';
 import { Navigate } from 'react-router-dom';
 import { Screen, Backdrop, Sheet, Brand, Logo, Title, Subtitle,
   Primary, SocialBtn, ButtonsCol, Legal,
   ModalOverlay, ModalContent, ModalInner, ModalHeader, ModalTitle, CloseButton,
-  EmailForm, Field, Input, ErrorText, ToggleModeButton } from '@/styles/Pages/LoginPage.styles';
+  EmailForm, Field, Input, ErrorText, ToggleModeButton, 
+  Legal1} from '@/styles/Pages/LoginPage.styles';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 
 export const LoginPage: React.FC = () => {
@@ -128,10 +131,23 @@ export const LoginPage: React.FC = () => {
           </SocialBtn>
         </ButtonsCol>
 
-        <Legal>
+        {/* Public links inside the sheet for safe z-index and clickability */}
+        {/* <div style={{ marginTop: 8, display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', zIndex: 2, position: 'relative' }}> */}
+           <Legal1>
+            <Link to="/about">About</Link>
+            <Link to="/contact">Contact</Link>
+            <Link to="/privacy">Privacy</Link>
+            <Link to="/terms">Terms</Link>
+            <Link to="/refunds">Refunds</Link>
+            <Link to="/commerce">Commerce</Link>
+          </Legal1>
+          
+        {/* </div> */}
+
+        {/* <Legal>
           By continuing, you agree to our <a href="/terms">Terms of Use</a> and{" "}
           <a href="/privacy">Privacy Policy</a>.
-        </Legal>
+        </Legal> */}
       </Sheet>
       {emailModalOpen ? (
         <ModalOverlay

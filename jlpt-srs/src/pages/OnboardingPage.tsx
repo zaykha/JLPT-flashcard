@@ -206,8 +206,12 @@ export const OnboardingPage: React.FC = () => {
         await ensureDailyQueue(user.uid, { levelRange: range, perDay: 2 });
       }
 
-      // Ensure wallet doc exists (zero balance) then sync progress
-      try { await ensureWalletDoc(user.uid); } catch (e) { console.warn('[Onboarding] ensureWalletDoc failed (non-fatal)', e); }
+      // Ensure wallet doc exists (client-side) only if explicitly allowed (dev)
+      try {
+        if (import.meta.env.VITE_WALLET_CLIENT_INIT === 'true') {
+          await ensureWalletDoc(user.uid);
+        }
+      } catch (e) { console.warn('[Onboarding] ensureWalletDoc failed (non-fatal)', e); }
       try { await syncLessonProgressFromFirestore(user.uid); } catch {}
 
       // 3) Mirror to bootstrap cache (include avatar)
