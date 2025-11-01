@@ -40,7 +40,8 @@ type Props = {
 };
 
 export const TopicCard: React.FC<Props> = ({ keyName, title, icon='bookmark', buckets, onClick }) => {
-  const selected = useTopics(s => s.selected.has(keyName));
+  // Selected state not implemented in store; render unselected styling.
+  const selected = false;
 
   const segments: ProgressSegment[] = [
     { key:'new', label:'New', count: buckets.newCount },

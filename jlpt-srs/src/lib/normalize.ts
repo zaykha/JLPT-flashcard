@@ -21,7 +21,17 @@ export function normalizeWord(r: RawWord): Word {
   const kanji = (r.word || '').trim();
   const hiragana = (r.furigana || '').trim();
   const english = (r.meaning || '').trim();
-  const level = (r.level as JLPTLevel) ?? 3;
+  const levelNum = (r.level as JLPTLevel) ?? 3;
+  const level = ((): Word['level'] => {
+    switch (levelNum) {
+      case 1: return 'N1';
+      case 2: return 'N2';
+      case 3: return 'N3';
+      case 4: return 'N4';
+      case 5: return 'N5';
+      default: return 'N3';
+    }
+  })();
 
   return {
     id: wid(kanji, hiragana, english),
@@ -29,7 +39,7 @@ export function normalizeWord(r: RawWord): Word {
     hiragana,
     english,
     level,
-    topicKey: '__UNASSIGNED__', // will be filled by grouping
+    topicKey: 'Abstract & Academic', // default fallback; grouping can update later
   };
 }
 

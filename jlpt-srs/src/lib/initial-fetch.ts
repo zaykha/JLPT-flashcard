@@ -206,7 +206,7 @@ export async function fetchInitialSnapshot() {
   // ✅ Initialize lesson packs service *with* the boot-ish shape it expects
   try {
     await initLessonPacksFromBoot({
-      catalogLevel: level,          // JLPTLevelStr (narrowed above)
+      catalogLevel: (level ?? undefined) as any,          // JLPTLevelStr (narrowed above)
       lessonProgress,               // normalized progress (has completed/current)
     });
   } catch (e) {
@@ -271,7 +271,7 @@ export async function fetchInitialSnapshot() {
       nickname: profileMaybe?.nickname ?? null,
       avatarKey: profileMaybe?.avatarKey ?? null,
       accountType: profileMaybe?.accountType ?? 'normal',
-      jlptLevel: profileMaybe?.jlptLevel ?? null,
+      jlptLevel: (profileMaybe?.jlptLevel as any) ?? undefined,
       createdAt: toMillis(profileMaybe?.createdAt),
       updatedAt: toMillis(profileMaybe?.updatedAt),
     },

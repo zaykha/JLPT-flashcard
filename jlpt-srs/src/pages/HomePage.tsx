@@ -35,7 +35,7 @@ import { useWalletActions } from '@/hooks/useWalletActions';
 import { getTotalLessonsForLevel } from '@/lib/constants/lessons';
 
 // import { DebugOverlay } from '@/components/dev/DebugOverlay';
-import { TestButtons } from '@/dev/dev/TestButtons';
+// import { TestButtons } from '@/dev/dev/TestButtons';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { LeftColumn, Main, MainGrid, RightColumn, Screen, TileOverlay } from '@/styles/Pages/HomePage.styles';
 import type { LessonCompletion, LessonProgress } from '@/types/lessonV1';
@@ -535,11 +535,7 @@ export const HomePage: React.FC = () => {
           />
         )} */}
 
-        {showDbg && (
-          <div style={{ marginTop: 12 }}>
-            <TestButtons />
-          </div>
-        )}
+        {showDbg && null}
 
         <BuyMoreLessonsModal
           open={showBuyModal}
