@@ -11,7 +11,7 @@ import { AppErrorBoundary } from './components/AppErrorBoundary';
 
 
 export const AppProviders: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { mode, resolved, _applySystem } = useThemeMode();
+  const { resolved, _applySystem } = useThemeMode();
   const WALLET_ENABLED = import.meta.env.VITE_WALLET_ENABLED === 'true';
 
   // Create QueryClient once to avoid provider remounts on re-render

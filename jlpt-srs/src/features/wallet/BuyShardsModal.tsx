@@ -46,6 +46,7 @@ export const BuyShardsModal: React.FC<Props> = ({ open, onClose, initialSku }) =
   const [orderId, setOrderId] = useState<string | null>(null);
   const [status, setStatus] = useState<'catalog' | 'checkout' | 'processing'>('catalog');
   const [message, setMessage] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -55,6 +56,7 @@ export const BuyShardsModal: React.FC<Props> = ({ open, onClose, initialSku }) =
       setOrderId(null);
       setStatus('catalog');
       setMessage(null);
+      setSuccess(false);
       return;
     }
 
@@ -77,21 +79,23 @@ export const BuyShardsModal: React.FC<Props> = ({ open, onClose, initialSku }) =
   }, [open, onClose]);
 
   const handleSelect = async (product: Product) => {
+    // Selection only; buying occurs when clicking Buy
+    if (status === 'processing') return;
     setSelectedProduct(product);
+  };
+
+  const beginCheckout = async () => {
+    if (!selectedProduct || status === 'processing') return;
     setStatus('processing');
     setMessage(null);
+    const product = selectedProduct;
     try {
       console.info('wallet.select_sku', { sku: product.sku, ts: Date.now() });
-      // Provide backend with priceId/amount/shards to avoid undefined fields
       const priceId = (product as any).priceId ?? (product as any).stripePriceId ?? undefined;
       const amount = Number.isFinite(Number((product as any).amount ?? (product as any).priceJpy))
         ? Number((product as any).amount ?? (product as any).priceJpy)
         : undefined;
-      const { orderId: id, clientSecret: secret } = await beginOrder(product.sku, {
-        priceId,
-        amount,
-        shards: (product as any).shards,
-      });
+      const { orderId: id, clientSecret: secret } = await beginOrder(product.sku, { priceId, amount, shards: (product as any).shards });
       console.info('wallet.begin_order', { sku: product.sku, orderId: id, ts: Date.now() });
       setOrderId(id);
       setClientSecret(secret);
@@ -113,7 +117,7 @@ export const BuyShardsModal: React.FC<Props> = ({ open, onClose, initialSku }) =
         setCatalog({ products: response.products, loading: false, error: null, currency: response.currency });
         if (initialSku) {
           const found = response.products.find(p => p.sku === initialSku);
-          if (found) void handleSelect(found);
+          if (found) setSelectedProduct(found);
         }
       })
       .catch(err => {
@@ -130,6 +134,7 @@ export const BuyShardsModal: React.FC<Props> = ({ open, onClose, initialSku }) =
       setOrderId(null);
       setStatus('catalog');
       setMessage(null);
+      setSuccess(false);
     }, 200);
   };
 
@@ -138,17 +143,18 @@ export const BuyShardsModal: React.FC<Props> = ({ open, onClose, initialSku }) =
   return (
     <ModalBackdrop>
       <ModalCard ref={modalRef} role="dialog" aria-modal="true" aria-label="Buy shards">
-        <ModalHeader>
-          <h3>Shards Store</h3>
-          <CloseButton type="button" onClick={resetAndClose}>✖</CloseButton>
-        </ModalHeader>
+        <CardInner>
+          <ModalHeader>
+            <h3>Shards Store</h3>
+            <CloseButton type="button" onClick={resetAndClose} disabled={status === 'processing' || success}>✖</CloseButton>
+          </ModalHeader>
 
         {catalog.loading && <Spinner />}
         {!catalog.loading && status === 'processing' && !clientSecret && <Spinner />}
         {catalog.error && <ErrorText>{catalog.error}</ErrorText>}
 
         {!catalog.loading && !clientSecret && (
-          <Catalog products={catalog.products} onSelect={handleSelect} processing={status === 'processing'} />
+          <Catalog products={catalog.products} onSelect={handleSelect} processing={status === 'processing'} selectedSku={selectedProduct?.sku ?? null} onBuy={beginCheckout} />
         )}
 
         {clientSecret && selectedProduct && (
@@ -159,16 +165,26 @@ export const BuyShardsModal: React.FC<Props> = ({ open, onClose, initialSku }) =
             onClose={resetAndClose}
             setMessage={setMessage}
             refresh={refresh}
+            success={success}
+            onSuccess={() => setSuccess(true)}
           />
         )}
 
         {message && <Status>{message}</Status>}
+
+        {success && (
+          <FullSuccessOverlay aria-live="polite" aria-label="Payment success">
+            <TickBig><span /></TickBig>
+            <p>Payment successful</p>
+          </FullSuccessOverlay>
+        )}
+        </CardInner>
       </ModalCard>
     </ModalBackdrop>
   );
 };
 
-const Catalog: React.FC<{ products: Product[]; onSelect: (p: Product) => void; processing: boolean }> = ({ products, onSelect, processing }) => {
+const Catalog: React.FC<{ products: Product[]; onSelect: (p: Product) => void; processing: boolean; selectedSku: string | null; onBuy: () => void }> = ({ products, onSelect, processing, selectedSku, onBuy }) => {
   const recommended = useMemo(() => products.find(p => p.sku === RECOMMENDED_SKU)?.sku, [products]);
 
   if (!products.length) {
@@ -183,14 +199,18 @@ const Catalog: React.FC<{ products: Product[]; onSelect: (p: Product) => void; p
           <ProductCard
             key={product.sku}
             product={product}
-            highlight={product.sku === recommended}
-            onSelect={selected => {
-              if (processing) return;
-              onSelect(selected);
-            }}
+            highlight={product.sku === (selectedSku || recommended)}
+            noButton
+            onSelect={selected => { if (!processing) onSelect(selected); }}
           />
         ))}
       </ProductGrid>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+        <GhostButton type="button" onClick={onBuy} disabled={!selectedSku || processing} style={{ display: 'none' }} />
+        <PrimaryButton type="button" onClick={onBuy} disabled={!selectedSku || processing}>
+          {processing ? 'Preparing…' : 'Buy'}
+        </PrimaryButton>
+      </div>
     </>
   );
 };
@@ -202,9 +222,11 @@ type CheckoutProps = {
   onClose: () => void;
   setMessage: (value: string | null) => void;
   refresh: () => Promise<void>;
+  success: boolean;
+  onSuccess: () => void;
 };
 
-const Checkout: React.FC<CheckoutProps> = ({ clientSecret, orderId, product, onClose, setMessage, refresh }) => {
+const Checkout: React.FC<CheckoutProps> = ({ clientSecret, orderId, product, onClose, setMessage, refresh, success, onSuccess }) => {
   const theme = useTheme();
   const isDark = useMemo(() => {
     // Rough luminance check for theme background
@@ -241,7 +263,7 @@ const Checkout: React.FC<CheckoutProps> = ({ clientSecret, orderId, product, onC
   return (
     <Elements stripe={stripePromise} options={options}>
       <Divider />
-      <CheckoutForm product={product} orderId={orderId} onClose={onClose} setMessage={setMessage} refresh={refresh} />
+      <CheckoutForm product={product} orderId={orderId} onClose={onClose} setMessage={setMessage} refresh={refresh} success={success} onSuccess={onSuccess} />
     </Elements>
   );
 };
@@ -252,9 +274,11 @@ type CheckoutFormProps = {
   onClose: () => void;
   setMessage: (value: string | null) => void;
   refresh: () => Promise<void>;
+  success: boolean;
+  onSuccess: () => void;
 };
 
-const CheckoutForm: React.FC<CheckoutFormProps> = ({ product, orderId, onClose, setMessage, refresh }) => {
+const CheckoutForm: React.FC<CheckoutFormProps> = ({ product, orderId, onClose, setMessage, refresh, success, onSuccess }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [submitting, setSubmitting] = useState(false);
@@ -294,8 +318,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ product, orderId, onClose, 
       el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     console.info('wallet.sync_after_payment', { sku: product.sku, orderId, ts: Date.now()});
-    setMessage('+ Shards added!');
-    setTimeout(onClose, 800);
+    setMessage(null);
+    onSuccess();
+    setTimeout(onClose, 900);
   };
 
   return (
@@ -311,11 +336,11 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ product, orderId, onClose, 
       <PaymentElement onReady={() => setPaymentReady(true)} />
 
       <Actions>
-        <GhostButton type="button" onClick={onClose} disabled={submitting}>Cancel</GhostButton>
+        <GhostButton type="button" onClick={onClose} disabled={submitting || success}>Cancel</GhostButton>
         <PrimaryButton
           type="button"
           onClick={handleSubmit}
-          disabled={submitting || !paymentReady}
+          disabled={submitting || success || !paymentReady}
         >
           {submitting ? 'Processing…' : `Pay ${currencyFormatter.format(Number.isFinite(Number((product as any).amount)) ? Number((product as any).amount) : 0)}`}
         </PrimaryButton>
@@ -394,4 +419,44 @@ const Actions = styled.div`
   gap: 12px;
   justify-content: flex-end;
   @media (max-width: 480px) { flex-wrap: wrap; button { flex: 1 1 auto; } }
+`;
+
+// Wraps entire card content to allow a full overlay
+const CardInner = styled.div`
+  position: relative;
+`;
+
+const FullSuccessOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 5;
+  border-radius: 12px;
+  p { margin-top: 12px; font-weight: 700; color: #fff; }
+`;
+
+const TickBig = styled.div`
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #12b886;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  span {
+    width: 30px;
+    height: 16px;
+    border-left: 5px solid #fff;
+    border-bottom: 5px solid #fff;
+    transform: rotate(-45deg) scale(0.6);
+    animation: tickGrow 520ms ease-out forwards;
+  }
+  @keyframes tickGrow {
+    from { opacity: 0; transform: rotate(-45deg) scale(0.4); }
+    to { opacity: 1; transform: rotate(-45deg) scale(1); }
+  }
 `;

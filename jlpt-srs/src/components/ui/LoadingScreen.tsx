@@ -33,7 +33,7 @@ const Screen = styled.div`
   align-items: center;
   justify-content: center;
   background:
-    url('/homepagebg4.jpg') center/cover no-repeat,
+    url('/homepagebg2.jpg') center/cover no-repeat,
     radial-gradient(1200px 600px at 20% -10%, rgba(111,126,79,.35), transparent 60%),
     radial-gradient(900px 500px at 120% 110%, rgba(139,107,63,.25), transparent 65%),
     #0b0f14;

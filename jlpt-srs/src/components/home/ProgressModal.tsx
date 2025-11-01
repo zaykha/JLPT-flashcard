@@ -33,7 +33,6 @@ export const ProgressModal: React.FC<Props> = ({ open, onClose, lessonProgress }
         <Close onClick={onClose} aria-label="Close">✖</Close>
         <ModalHeader>
           <h3>Study Progress</h3>
-          <p>Snapshot from your lesson progress (Firestore).</p>
         </ModalHeader>
 
         <Body>
@@ -105,7 +104,7 @@ const Modal = styled.div`
   max-height: min(90vh, 720px);
   background: ${({ theme }) => theme.colors.sheetBg};
   border-radius: 20px;
-  border: 2px solid #000;
+  border: 2px solid ${({ theme }) => theme.colors.pixelBorder};
   box-shadow: 0 18px 48px rgba(0,0,0,0.45);
   display: grid;
   grid-template-rows: auto 1fr;
@@ -118,11 +117,14 @@ const Close = styled.button`
   width: 36px;
   height: 36px;
   border-radius: 12px;
-  border: 2px solid #000;
-  background: #fff;
+  border: 2px solid ${({ theme }) => theme.colors.pixelBorder};
+  background: ${({ theme }) => theme.colors.primary};
+  color: #fff;
   font-family: ${({ theme }) => theme.fonts.heading};
   font-size: 14px;
   cursor: pointer;
+  &:hover { filter: brightness(0.95); }
+  &:focus-visible { outline: 3px solid #ffffff88; outline-offset: 2px; }
 `;
 
 const ModalHeader = styled.div`
@@ -134,11 +136,7 @@ const ModalHeader = styled.div`
     font-size: 18px;
     letter-spacing: .08em;
     text-transform: uppercase;
-  }
-  p {
-    margin: 6px 0 0;
-    font-size: 12px;
-    color: ${({ theme }) => theme.colors.textMuted};
+    color: ${({ theme }) => theme.colors.text};
   }
 `;
 
@@ -156,13 +154,18 @@ const Cards = styled.div`
   @media (max-width: 520px) { grid-template-columns: repeat(2, 1fr); }
 `;
 const StatCard = styled.div`
-  border: 2px solid #000;
+  border: 2px solid ${({ theme }) => theme.colors.pixelBorder};
   border-radius: 14px;
   padding: 12px;
   text-align: center;
   background: ${({ theme }) => theme.colors.panel};
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 `;
-const StatNum = styled.div` font-size: 1.2rem; font-weight: 800; `;
+const StatNum = styled.div`
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.primary};
+`;
 const StatLabel = styled.div` font-size: 0.75rem; opacity: 0.8; `;
 
 const LevelHeading = styled.div`
@@ -176,15 +179,15 @@ const LevelBarWrap = styled.div`
   margin: 10px 0 8px;
   width: 100%;
   height: 12px;
-  border: 2px solid #000;
+  border: 2px solid ${({ theme }) => theme.colors.pixelBorder};
   border-radius: 999px;
-  background: rgba(255,255,255,0.5);
+  background: ${({ theme }) => theme.colors.sheetBg};
   overflow: hidden;
 `;
 
 const LevelBar = styled.div`
   height: 100%;
-  background: linear-gradient(90deg, #f97316, #ec4899);
+  background: linear-gradient(90deg, ${({ theme }) => theme.colors.primary}, ${({ theme }) => theme.colors.accent});
   transition: width 0.6s ease;
 `;
 
@@ -198,5 +201,14 @@ const SectionTitle = styled.h4` margin: 0; font-size: .9rem; `;
 const List = styled.div` display: grid; gap: 8px; `;
 const GridTwo = styled.div` display: grid; gap: 14px; grid-template-columns: 1fr 1fr; @media (max-width: 520px) { grid-template-columns: 1fr; }`;
 
-const Row = styled.div` padding: 10px 12px; border: 2px solid #000; border-radius: 12px; background: ${({ theme }) => theme.colors.sheetBg}; display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; `;
+const Row = styled.div`
+  padding: 10px 12px;
+  border: 2px solid ${({ theme }) => theme.colors.pixelBorder};
+  border-radius: 12px;
+  background: ${({ theme }) => theme.colors.sheetBg};
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: baseline;
+`;
 const EmptyState = styled.div` opacity: 0.7; font-size: 0.85rem; `;

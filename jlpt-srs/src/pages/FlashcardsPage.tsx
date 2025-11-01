@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSession } from '@/store/session';
 import { Flashcard } from '@/components/flashcards/Flashcard';
-import { SpeechButton } from '@/components/flashcards/SpeechButton';
 import { useNavigate } from 'react-router-dom';
 import { Screen, TileOverlay, Panel, Header, Title, Body, Stage, Hud,
   Counter, BarWrap, BarFill, Controls, Btn, TopRow, 
@@ -116,7 +115,7 @@ export const FlashcardsPage: React.FC = () => {
 
             <Controls>
               <Btn $variant="secondary" onClick={handlePrev}>←</Btn>
-              <SpeechButton word={word} />
+              <Btn $variant="ghost" onClick={handleFlip}>Flip</Btn>
               <Btn $variant="primary" onClick={handleNext}>→</Btn>
             </Controls>
           </Stage>

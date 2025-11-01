@@ -9,9 +9,9 @@ import { friendlyMessage } from '@/lib/api/http';
 const isProduction = import.meta.env.PROD;
 
 export const WalletDebugPanel: React.FC = () => {
-  const [status, setStatus] = useState<string | null>(null);
-
   if (isProduction) return null;
+
+  const [status, setStatus] = useState<string | null>(null);
 
   const { wallet, transactions, loading, error, refresh, openBuyModal } = useWalletContext();
   const purchase = usePurchase();
@@ -121,7 +121,7 @@ export const WalletDebugPanel: React.FC = () => {
           <Empty>—</Empty>
         ) : (
           <ul>
-            {latestTransactions.map(tx => (
+{latestTransactions.map((tx, i) => (
               <li key={tx.id ?? String(i)}>
                 <span>{tx.type}</span>
                 <strong>{tx.amount}</strong>

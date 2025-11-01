@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import {
   ModalRoot, ModalHeader, ModalTitle, ModalBody, ModalActions, ModalClose
 } from '@/components/ui/Modal';

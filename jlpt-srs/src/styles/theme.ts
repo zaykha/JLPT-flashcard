@@ -39,8 +39,8 @@ const commonBase = {
   radii: { pill: '999px', card: '16px' },
   radius: { sm: '6px', md: '10px', lg: '14px', xl: '18px', pill: '9999px' },
   shadow: {
-    card: '0 6px 16px rgba(0,0,0,0.18)',
-    insetCrisp: 'inset 0 0 0 1px rgba(0,0,0,0.18)',
+    card: '0 6px 16px rgba(15,23,42,0.18)',
+    insetCrisp: 'inset 0 0 0 1px rgba(15,23,42,0.18)',
   },
   gradient: {
     emeraldCyan: 'linear-gradient(135deg, #10b981, #06b6d4)',
@@ -53,20 +53,20 @@ const commonBase = {
   textures: {
     scanlines: `repeating-linear-gradient(
       to bottom,
-      rgba(0,0,0,0.12) 0px,
-      rgba(0,0,0,0.12) 1px,
-      rgba(0,0,0,0) 2px,
-      rgba(0,0,0,0) 4px
+      rgba(15,23,42,0.12) 0px,
+      rgba(15,23,42,0.12) 1px,
+      rgba(15,23,42,0) 2px,
+      rgba(15,23,42,0) 4px
     )`,
     dither: `repeating-linear-gradient(
       45deg,
-      rgba(255,255,255,0.06) 0 2px,
-      rgba(0,0,0,0.06) 2px 4px
+      rgba(248,244,233,0.06) 0 2px,
+      rgba(15,23,42,0.06) 2px 4px
     )`,
-    border8: '0 0 0 4px rgba(0,0,0,0.2), 0 0 0 8px rgba(255,255,255,0.06)',
-    crtMask: `radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0, rgba(0,0,0,0.05) 70%, rgba(0,0,0,0.15) 100%)`,
+    border8: '0 0 0 4px rgba(15,23,42,0.2), 0 0 0 8px rgba(248,244,233,0.06)',
+    crtMask: `radial-gradient(circle at 50% 50%, rgba(15,23,42,0) 0, rgba(15,23,42,0.05) 70%, rgba(15,23,42,0.15) 100%)`,
     washi: `url('/assets/textures/washi-fibers.png')`,
-    pixelShadow: `drop-shadow(0 1px 0 #00000033) drop-shadow(0 2px 0 #00000022)`,
+    pixelShadow: `drop-shadow(0 1px 0 #0F172A33) drop-shadow(0 2px 0 #0F172A22)`,
   },
   space: [0,4,8,12,16,20,24,32,40,48],
   z: { header: 10, modal: 1000, tooltip: 1100 },
@@ -83,32 +83,32 @@ export const lightTheme: DefaultTheme = {
     indigo:   '#1A2A4A',
     gold:     '#C8A646',
     bg:       '#F7F3E8',
-    panel:    '#FFFFFF',
-    sheetBg:  '#FFFFFF',
+    panel:    '#F9F5EC',
+    sheetBg:  '#F9F5EC',
     text:     '#161616',
     textMuted:'#6B7280',
-    onPrimary:'#FFFFFF',
+    onPrimary:'#F9F5EC',
     onAccent: '#FFF7F5',
     success:  '#2E7D32',
     warning:  '#B26A00',
     danger:   '#C0352B',
-    border:    'rgba(0,0,0,0.12)',
-    borderDark:'rgba(0,0,0,0.32)',
+    border:    'rgba(15,23,42,0.12)',
+    borderDark:'rgba(15,23,42,0.32)',
     pixelBorder:'#0F172A',
   },
   color: {
     text:   '#161616',
     muted:  '#6B7280',
-    border: 'rgba(0,0,0,0.12)',
-    card:   '#FFFFFF',
-    panel:  '#FFFFFF',
+    border: 'rgba(15,23,42,0.12)',
+    card:   '#F9F5EC',
+    panel:  '#F9F5EC',
     accent: '#D44D2D',
     danger: '#C0352B',
   },
   components: {
     button: {
-      primary:   { bg: '#8B6B3F', fg: '#FFFFFF', hover: '#7B5E38', active: '#6E5331' },
-      secondary: { bg: '#6F7E4F', fg: '#FFFFFF', hover: '#627045', active: '#55633C' },
+      primary:   { bg: '#8B6B3F', fg: '#F9F5EC', hover: '#7B5E38', active: '#6E5331' },
+      secondary: { bg: '#6F7E4F', fg: '#F9F5EC', hover: '#627045', active: '#55633C' },
       accent:    { bg: '#D44D2D', fg: '#FFF7F5', hover: '#C04124', active: '#A6361D' },
       ghost:     { bg: 'transparent', fg: '#1A2A4A', hoverBg: 'rgba(26,42,74,0.06)' },
     },
@@ -118,8 +118,8 @@ export const lightTheme: DefaultTheme = {
       gold:   { bg: '#FBF6E6', fg: '#8B6B3F' },
     },
     card: {
-      bg: '#FFFFFF',
-      border: '1px solid rgba(0,0,0,0.12)',
+      bg: '#F9F5EC',
+      border: '1px solid rgba(15,23,42,0.12)',
       headerBg: '#F9FAFB',
       paperImage: '/ui/card-paper-light.png',
     },
@@ -134,13 +134,13 @@ export const lightTheme: DefaultTheme = {
       highlight: '#F2B6C1',
     },
     modal: {
-      backdrop: 'rgba(0,0,0,0.55)',
+      backdrop: 'rgba(15,23,42,0.55)',
       // put this parchment in /public/assets/ui/parchment-frame.png (or your path)
       frameImage: '/ui/parchment-frame.png',
       frameSlice: 120,  // adjust to your image
       frameWidth: 36,   // visual border thickness
       innerBg: '#F6E8C8',
-      shadow: '0 14px 36px rgba(0,0,0,.45)',
+      shadow: '0 14px 36px rgba(15,23,42,.45)',
     }
   },
   backgrounds: {
@@ -179,29 +179,29 @@ export const darkTheme: DefaultTheme = {
     success:  '#4CAF50',
     warning:  '#D79A22',
     danger:   '#F0523D',
-    border:    'rgba(255,255,255,0.12)',
-    borderDark:'rgba(255,255,255,0.24)',
+    border:    'rgba(248,244,233,0.12)',
+    borderDark:'rgba(248,244,233,0.24)',
     pixelBorder:'#93A0BC',
   },
   color: {
     text:   '#F3F4F6',
     muted:  '#9CA3AF',
-    border: 'rgba(255,255,255,0.12)',
+    border: 'rgba(248,244,233,0.12)',
     card:   '#111827',
     panel:  '#111827',
     accent: '#E25A3A',
     danger: '#F0523D',
   },
   shadow: {
-    card: '0 8px 20px rgba(0,0,0,0.5)',
-    insetCrisp: 'inset 0 0 0 1px rgba(255,255,255,0.08)',
+    card: '0 8px 20px rgba(15,23,42,0.5)',
+    insetCrisp: 'inset 0 0 0 1px rgba(248,244,233,0.08)',
   },
   components: {
     button: {
       primary:   { bg: '#8B6B3F', fg: '#1C1C1C', hover: '#A38254', active: '#6E5331' },
       secondary: { bg: '#6F7E4F', fg: '#0E0E0E', hover: '#829458', active: '#55633C' },
       accent:    { bg: '#E25A3A', fg: '#130503', hover: '#C84124', active: '#A8381F' },
-      ghost:     { bg: 'transparent', fg: '#E5E7EB', hoverBg: 'rgba(255,255,255,0.06)' },
+      ghost:     { bg: 'transparent', fg: '#E5E7EB', hoverBg: 'rgba(248,244,233,0.06)' },
     },
     tag: {
       sakura: { bg: '#3A2530', fg: '#F2B6C1' },
@@ -210,7 +210,7 @@ export const darkTheme: DefaultTheme = {
     },
     card: {
       bg: '#111827',
-      border: '1px solid rgba(255,255,255,0.08)',
+      border: '1px solid rgba(248,244,233,0.08)',
       headerBg: '#0F172A',
       paperImage: '/ui/card-paper-dark.png',
     },
@@ -225,13 +225,13 @@ export const darkTheme: DefaultTheme = {
       highlight: '#2B1C2A',
     },
     modal: {
-      backdrop: 'rgba(0,0,0,0.65)',
+      backdrop: 'rgba(15,23,42,0.65)',
       // Use dark parchment frame in dark theme
       frameImage: '/ui/parchment-frame-Dark.png',
       frameSlice: 120,
       frameWidth: 36,
       innerBg: '#EBDDBB',
-      shadow: '0 16px 40px rgba(0,0,0,.6)',
+      shadow: '0 16px 40px rgba(15,23,42,.6)',
     }
   },
   backgrounds: {

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { loadBootstrap } from '@/lib/bootstrap';
 import { jstTodayISO } from '@/lib/cache/lessons';
 import { SrsUnlockCard } from '../srs/srsUnlockCard';

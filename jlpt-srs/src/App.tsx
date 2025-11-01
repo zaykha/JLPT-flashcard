@@ -1,25 +1,22 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { StudyFlowRouter } from '@/pages/StudyFlowRouter';
 import { useAuth } from '@/store/auth';
 import { LoadingScreen } from '@/components/ui/LoadingScreen';
 
 import { LoginPage } from '@/pages/LoginPage';
-import { PrerequisitePage } from '@/pages/PrerequisitePage';
 import { OnboardingPage } from '@/pages/OnboardingPage';
 import { HomePage } from '@/pages/HomePage';
-import { ReviewLessonPage } from '@/pages/ReviewLessonPage';
-import { PurchasePage } from '@/pages/PurchasePage';
-import { WalletPage } from '@/features/wallet/WalletPage';
-import { SettingsPage } from '@/pages/SettingsPage';
-import { walletRoute } from '@/routes/walletRoute';
 import { ThemedBackground } from './components/layout/ThemeBackground';
-import { jstTodayISO } from './helpers/dateV1';
-import { reconcileLessonProgressIfStale } from './services/progressReconcileV1';
 import { DiagnosticsPage } from './pages/DiagnosticsPage';
 import { ensureDailyQueue } from './services/StudyPlanV1';
 import { syncLessonProgressFromFirestore } from './lib/synLessonProgress';
 import type { LessonProgress } from './types/lessonV1';
+import PrerequisitePage from './pages/PrerequisitePage';
+import { WalletPage } from './features/wallet/WalletPage';
+import PurchasePage from './pages/PurchasePage';
+import SettingsPage from './pages/SettingsPage';
+import ReviewLessonPage from './pages/ReviewLessonPage';
 
 function Protected({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();

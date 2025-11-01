@@ -8,12 +8,13 @@ type Props = {
   product: Product;
   onSelect: (product: Product) => void;
   highlight?: boolean;
+  noButton?: boolean;
 };
 
-export const ProductCard: React.FC<Props> = ({ product, onSelect, highlight }) => {
+export const ProductCard: React.FC<Props> = ({ product, onSelect, highlight, noButton }) => {
   const price = Number.isFinite(Number((product as any).amount)) ? Number((product as any).amount) : 0;
   return (
-    <Card $highlight={highlight}>
+    <Card $highlight={highlight} $clickable={!!noButton} onClick={noButton ? () => onSelect(product) : undefined}>
       {product.bonus ? <Bonus>+{product.bonus} bonus</Bonus> : null}
       <Shards>
         <span role="img" aria-label="glyph shards">💠</span>
@@ -21,14 +22,16 @@ export const ProductCard: React.FC<Props> = ({ product, onSelect, highlight }) =
       </Shards>
       <Price>{formatter.format(price)}</Price>
       {highlight ? <Badge>Best Value</Badge> : null}
-      <SelectButton type="button" onClick={() => onSelect(product)}>
-        Choose
-      </SelectButton>
+      {!noButton && (
+        <SelectButton type="button" onClick={() => onSelect(product)}>
+          Choose
+        </SelectButton>
+      )}
     </Card>
   );
 };
 
-const Card = styled.div<{ $highlight?: boolean }>`
+const Card = styled.div<{ $highlight?: boolean; $clickable?: boolean }>`
   position: relative;
   border: 2px solid ${({ theme, $highlight }) => ($highlight ? theme.colors.primary : theme.colors.pixelBorder)};
   border-radius: 16px;
@@ -39,6 +42,7 @@ const Card = styled.div<{ $highlight?: boolean }>`
   text-align: center;
   color: ${({ theme }) => theme.colors.text};
   box-shadow: ${({ $highlight }) => ($highlight ? '0 12px 28px rgba(139,107,63,0.25)' : 'none')};
+  cursor: ${({ $clickable }) => ($clickable ? 'pointer' : 'default')};
 `;
 
 const Bonus = styled.div`

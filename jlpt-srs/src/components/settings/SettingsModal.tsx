@@ -143,9 +143,10 @@ export const SettingsModal: React.FC<Props> = ({
 
   // Inline variant: render the same card with optional side panel without a backdrop
   return (
-    <ModalWrap>
-      {content}
-      {spendOpen && (
+    <InlineScreen>
+      <ModalWrap>
+        {content}
+        {spendOpen && (
         <SidePanel role="dialog" aria-label="Confirm profile update">
           <PanelHeader>Confirm profile update</PanelHeader>
           <SmallHint>Changes beyond your first free update cost shards.</SmallHint>
@@ -160,8 +161,9 @@ export const SettingsModal: React.FC<Props> = ({
             <PrimaryButton type="button" onClick={() => void handleSpendConfirm()} disabled={spendLoading || currentShards() < spendCost}>Spend</PrimaryButton>
           </SideActions>
         </SidePanel>
-      )}
-    </ModalWrap>
+        )}
+      </ModalWrap>
+    </InlineScreen>
   );
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -281,6 +283,7 @@ export const SettingsModal: React.FC<Props> = ({
 const Backdrop = styled.div`
   position: fixed;
   inset: 0;
+  /* Modal backdrop: simple dim, no image */
   background: rgba(0,0,0,0.7);
   display: grid;
   place-items: center;
@@ -291,6 +294,27 @@ const Backdrop = styled.div`
 const ModalWrap = styled.div`
   position: relative;
   display: inline-block; /* shrink to content width */
+`;
+
+// Inline settings screen background (when variant='inline')
+const InlineScreen = styled.div`
+  min-height: 100vh;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  padding: 32px 16px;
+  background:
+    url('/homepagebg4.jpg') center/cover no-repeat,
+    radial-gradient(1200px 600px at 20% -10%, rgba(111,126,79,.35), transparent 60%),
+    radial-gradient(900px 500px at 120% 110%, rgba(139,107,63,.25), transparent 65%),
+    ${({ theme }) => theme.colors.bg};
+  @media (prefers-color-scheme: dark) {
+    background:
+      url('/homepagebg4-dark.jpg') center/cover no-repeat,
+      radial-gradient(1200px 600px at 20% -10%, rgba(0,0,0,.35), transparent 60%),
+      radial-gradient(900px 500px at 120% 110%, rgba(0,0,0,.25), transparent 65%),
+      ${({ theme }) => theme.colors.bg};
+  }
 `;
 
 const Card = styled.form`

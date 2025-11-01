@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/store/auth';
 import { useSession } from '@/store/session';
@@ -47,6 +48,21 @@ import { Btn } from '@/styles/Pages/FlashCardPage.styles';
 // ---------- helpers (pure) ----------
 const isoOf = (s?: string) => (typeof s === 'string' ? s.slice(0, 10) : '');
 
+const LEVEL_RANGES: Record<JLPTLevelStr, { start: number; end: number }> = {
+  N5: { start: 1, end: 66 },
+  N4: { start: 67, end: 129 },
+  N3: { start: 130, end: 309 },
+  N2: { start: 310, end: 492 },
+  N1: { start: 493, end: 838 },
+};
+
+function inRange(level: JLPTLevelStr | null | undefined, n: number, catRange?: { start: number; end: number } | null) {
+  if (!Number.isFinite(n)) return false;
+  const range = catRange ?? (level ? LEVEL_RANGES[level] : undefined);
+  if (!range) return true; // if unknown, don't block
+  return n >= range.start && n <= range.end;
+}
+
 function normalizeCurrent(curr: LessonProgress['current'] | undefined, todayISO: string) {
   if (!Array.isArray(curr)) return [] as Array<{ lessonNo: number; LessonDate: string }>;
   return curr
@@ -92,6 +108,7 @@ export const HomePage: React.FC = () => {
   const [spendOpen, setSpendOpen] = useState(false);
   const [spendBusy, setSpendBusy] = useState(false);
   const [spendMsg, setSpendMsg] = useState<string | null>(null);
+  const [spendSuccess, setSpendSuccess] = useState(false);
   const [spendIntent, setSpendIntent] = useState<{ source: 'extra'|'missed'; count?: number; lessonNos?: number[] } | null>(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showProgress, setShowProgress] = useState(false);
@@ -207,9 +224,14 @@ export const HomePage: React.FC = () => {
   useEffect(() => {
     const onBuyMissed = (e: any) => {
       const lessonNos: number[] = Array.isArray(e?.detail?.lessonNos) ? e.detail.lessonNos : [];
-      if (lessonNos.length) {
-        setSpendIntent({ source: 'missed', lessonNos });
+      const currentLevel = (profile?.jlptLevel ?? null) as JLPTLevelStr | null;
+      const range = (cat as any)?.lessonRange ?? (currentLevel ? LEVEL_RANGES[currentLevel] : undefined);
+      const filtered = lessonNos.filter(n => inRange(currentLevel, Number(n), range));
+      if (filtered.length) {
+        setSpendIntent({ source: 'missed', lessonNos: filtered });
         setSpendOpen(true);
+      } else {
+        setPopup({ title: 'Not available', msg: 'Selected lessons are outside your current level.' });
       }
     };
     window.addEventListener('koza:buy-missed', onBuyMissed as any);
@@ -285,7 +307,13 @@ export const HomePage: React.FC = () => {
       const failed = Array.isArray(bootNow?.lessonProgress?.failed) ? (bootNow!.lessonProgress!.failed as any[]) : [];
       if (failed.length > 0) {
         const byDate = failed.slice().sort((a, b) => String(a.attemptedAt ?? '').localeCompare(String(b.attemptedAt ?? '')));
-        const pair = byDate.slice(0, 2).map(e => Number(e.lessonNo)).filter(Number.isFinite);
+        const currentLevel = (profile?.jlptLevel ?? null) as JLPTLevelStr | null;
+        const range = (cat as any)?.lessonRange ?? (currentLevel ? LEVEL_RANGES[currentLevel] : undefined);
+        const pair = byDate
+          .map(e => Number(e.lessonNo))
+          .filter(Number.isFinite)
+          .filter(n => inRange(currentLevel, n, range))
+          .slice(0, 2);
         if (pair.length) { setSpendIntent({ source: 'missed', lessonNos: pair }); setSpendOpen(true); return; }
       }
     } catch {}
@@ -319,7 +347,15 @@ export const HomePage: React.FC = () => {
           }
         }
       } else if (spendIntent.source === 'missed') {
-        const arr = (spendIntent.lessonNos ?? []).filter(Number.isFinite);
+        const currentLevel = (profile?.jlptLevel ?? null) as JLPTLevelStr | null;
+        const range = (cat as any)?.lessonRange ?? (currentLevel ? LEVEL_RANGES[currentLevel] : undefined);
+        const arr = (spendIntent.lessonNos ?? [])
+          .filter(Number.isFinite)
+          .filter(n => inRange(currentLevel, Number(n), range));
+        if (arr.length === 0) {
+          setSpendMsg('Selected lessons are outside your current level.');
+          return;
+        }
         const n = Math.max(1, arr.length || 1);
         await spend({ action: 'missed_lesson', count: n, note: `missed_lesson x${n}`, dayISO, dayIso: dayISO, lessonNos: arr, lessonId: String(arr[0] ?? '') });
         if (user?.uid && arr.length) {
@@ -327,8 +363,14 @@ export const HomePage: React.FC = () => {
           await assignMissedLessonsForToday(user.uid, arr);
           const { removeFailedLessons } = await import('@/services/removeFailedV1');
           await removeFailedLessons(user.uid, arr);
+          // Nudge UI to reload bootstrap
+          try { const { useSession } = await import('@/store/session'); useSession.getState().bumpBootRevision?.(); } catch {}
         }
       }
+      // Success tick overlay before closing and starting study
+      setSpendSuccess(true);
+      await new Promise((r) => setTimeout(r, 900));
+      setSpendSuccess(false);
       setSpendOpen(false);
       // Auto start study
       await handleStudy();
@@ -512,6 +554,7 @@ export const HomePage: React.FC = () => {
 
         {/* Spend confirm modal (extra/missed) */}
         <ModalRoot open={spendOpen} onClose={() => setSpendOpen(false)} maxWidth={520} labelledBy="spend-title">
+          <RelativeWrap>
           <ModalHeader>
             <ModalTitle id="spend-title">Confirm purchase</ModalTitle>
             <ModalClose aria-label="Close" onClick={() => setSpendOpen(false)}>×</ModalClose>
@@ -533,9 +576,16 @@ export const HomePage: React.FC = () => {
             {spendMsg && <div style={{ color: '#e03131', fontSize: 13 }}>{spendMsg}</div>}
           </ModalBody>
           <ModalActions>
-            <Btn $variant="ghost" onClick={() => setSpendOpen(false)}>Cancel</Btn>
-            <Btn $variant="primary" onClick={confirmSpend} disabled={spendBusy}>{spendBusy ? 'Processing…' : 'Confirm'}</Btn>
+            {/* Intentionally no Cancel button for a smoother purchase flow */}
+            <Btn $variant="primary" onClick={confirmSpend} disabled={spendBusy || spendSuccess}>{spendBusy ? 'Processing…' : 'Confirm'}</Btn>
           </ModalActions>
+          {spendSuccess && (
+            <SuccessOverlayHome aria-live="polite" aria-label="Spend success">
+              <TickHome><span /></TickHome>
+              <p>Purchase completed</p>
+            </SuccessOverlayHome>
+          )}
+          </RelativeWrap>
         </ModalRoot>
 
         {/* Unified Home popup */}
@@ -569,6 +619,46 @@ export const HomePage: React.FC = () => {
     </Screen>
   );
 };
+
+// Local styled helpers for success overlay
+const RelativeWrap = styled.div`
+  position: relative;
+`;
+
+const SuccessOverlayHome = styled.div`
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border-radius: 10px;
+  z-index: 3;
+  p { margin-top: 12px; font-weight: 600; color: #fff; }
+`;
+
+const TickHome = styled.div`
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #12b886;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  span {
+    width: 24px;
+    height: 12px;
+    border-left: 4px solid #fff;
+    border-bottom: 4px solid #fff;
+    transform: rotate(-45deg) scale(0.6);
+    animation: tickDrawHome 480ms ease-out forwards;
+  }
+  @keyframes tickDrawHome {
+    from { opacity: 0; transform: rotate(-45deg) scale(0.4); }
+    to { opacity: 1; transform: rotate(-45deg) scale(1); }
+  }
+`;
 
 // Assuming exported default elsewhere if needed
 export default HomePage;

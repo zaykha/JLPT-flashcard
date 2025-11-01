@@ -166,9 +166,9 @@ export const StudySection: React.FC<Props> = React.memo(({ onStart, lessonNo }) 
   const [finishedToday, setFinishedToday] = useState(false);
   const [calcReady, setCalcReady] = useState(false);
 
-  const { primaryCta, secondaryHint } = useMemo(() => {
-    const { primary, hint } = getCtas(stageKey, String(quizMode), finishedToday);
-    return { primaryCta: primary, secondaryHint: hint };
+  const { primaryCta } = useMemo(() => {
+    const { primary } = getCtas(stageKey, String(quizMode), finishedToday);
+    return { primaryCta: primary };
   }, [stageKey, quizMode, finishedToday]);
 
   // Compute "finished today" (JST) from bootstrap without causing loops.
@@ -229,7 +229,6 @@ export const StudySection: React.FC<Props> = React.memo(({ onStart, lessonNo }) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bootRevision, stageKey]);
 
-  const pillText = useMemo(() => getPillText(stageKey, quizMode, finishedToday), [stageKey, quizMode, finishedToday]);
   // Compute left title consistently on every render (avoid conditional hook order)
   const leftTitle = useMemo(() => (
     finishedToday
@@ -268,12 +267,10 @@ export const StudySection: React.FC<Props> = React.memo(({ onStart, lessonNo }) 
       >
         <LeftBlock $mobile={isMobile}>
           <LessonNo>{leftTitle}</LessonNo>
-          <StatusPill data-stage={stageKey} $mobile={isMobile}>{pillText}</StatusPill>
         </LeftBlock>
 
         <RightBlock $mobile={isMobile}>
           <StudyWord>{primaryCta}</StudyWord>
-          <Hint>{secondaryHint}</Hint>
         </RightBlock>
       </StudyCard>
     </Section>

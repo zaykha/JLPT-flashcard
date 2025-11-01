@@ -244,7 +244,9 @@ export const WalletPage: React.FC = () => {
           <SectionHeader>
             <h2>Recent activity</h2>
           </SectionHeader>
-          <TransactionList transactions={transactions} limit={10} />
+          <ActivityWrap>
+            <TransactionList transactions={transactions} limit={10} />
+          </ActivityWrap>
         </Section>
 
         {/* <Section>
@@ -385,6 +387,26 @@ const MetaRow = styled.div`
 const Section = styled.section`
   display: grid;
   gap: 12px;
+`;
+
+const ActivityWrap = styled.div`
+  /* Desktop/tablet: fixed height with scroll */
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px; /* space for scrollbar */
+
+  /* Smooth scroll and subtle scrollbar styling */
+  scroll-behavior: smooth;
+  &::-webkit-scrollbar { width: 8px; height: 8px; }
+  &::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 8px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+
+  /* Mobile: allow natural flow, no fixed height */
+  @media (max-width: 480px) {
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+  }
 `;
 
 const QuickBuyRow = styled.div`

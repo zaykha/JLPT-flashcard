@@ -507,15 +507,20 @@ const Chip = styled.button<{ $kind: 'completed' | 'failed' | 'current' }>`
   font-size: 13px;
   color: #fff;
   cursor: pointer;
+  /* Monotone, theme-aligned backgrounds */
   background: ${({ $kind, theme }) =>
-    $kind === 'completed' ? `linear-gradient(135deg, ${theme.colors.success}, ${theme.colors.indigo})` :
-    $kind === 'failed' ? `linear-gradient(135deg, ${theme.colors.danger}, ${theme.colors.accent})` :
-    `linear-gradient(135deg, ${theme.colors.warning}, ${theme.colors.accent})`};
+    $kind === 'completed' ? theme.colors.success :
+    $kind === 'failed' ? theme.colors.danger :
+    theme.colors.primary};
   opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
   transition: all 0.2s;
 
   &:hover:not(:disabled) {
-    transform: scale(1.1);
+    filter: brightness(0.95);
+  }
+  &:focus-visible {
+    outline: 3px solid ${({ theme }) => theme.colors.onPrimary}55;
+    outline-offset: 2px;
   }
 `;
 
