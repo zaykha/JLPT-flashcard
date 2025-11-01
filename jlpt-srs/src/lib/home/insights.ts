@@ -1,5 +1,5 @@
 import type { ProgressInsights, QuizAttemptStat, QuizType } from './types';
-import type { LessonProgress, LessonCompletion, LessonFailure, LessonQuizSnapshot } from '@/lib/user-data';
+import type { LessonProgress, LessonCompletion, LessonFailure, LessonQuizSnapshot } from '@/types/lessonV1';
 
 type StudyRecordMutable = {
   dateISO: string;

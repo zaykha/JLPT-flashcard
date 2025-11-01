@@ -1,4 +1,4 @@
-import type { JLPTLevelStr } from '@/lib/user-data';
+import type { JLPTLevelStr } from '@/types/userV1';
 import type { Timestamp } from 'firebase/firestore';
 
 export type FirebaseTimestamp = Timestamp;

@@ -1,8 +1,8 @@
 import { doc, updateDoc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { JLPTLevelStr } from '@/lib/user-data';
+import type { JLPTLevelStr } from '@/types/userV1';
 import type { LessonCatalog } from '@/lib/api/types';
-import type { LessonProgress } from '@/lib/user-data';
+import type { LessonProgress } from '@/types/lessonV1';
 import { jstTodayISO } from '@/lib/cache/lessons';
 
 export function nextLessonNosFrom(lastCompletedNo: number | undefined, range: {start:number; end:number}, count: number) {

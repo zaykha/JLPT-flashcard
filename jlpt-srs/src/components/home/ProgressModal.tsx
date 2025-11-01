@@ -62,10 +62,9 @@ export const ProgressModal: React.FC<Props> = ({ open, onClose, lessonProgress }
                 {recentCompleted.length ? recentCompleted.map((e, i) => (
                   <Row key={`c-${i}`}>
                     <b>Lesson {e.lessonNo ?? '—'}</b>
-                    <small> · {String(e.completedAt ?? e.lessonId ?? '').slice(0,10)}</small>
+                    <small> · {String(e.completedAt ?? '').slice(0,10)}</small>
                     {e.quiz?.durationSec != null && <small> · Vocab: {e.quiz.durationSec}s</small>}
                     {e.grammarQuiz?.durationSec != null && <small> · Grammar: {e.grammarQuiz.durationSec}s</small>}
-                    {e.attempts != null && <small> · Attempts: {e.attempts}</small>}
                   </Row>
                 )) : <EmptyState>No completed lessons yet.</EmptyState>}
               </List>
@@ -76,7 +75,7 @@ export const ProgressModal: React.FC<Props> = ({ open, onClose, lessonProgress }
                 {recentFailed.length ? recentFailed.map((e, i) => (
                   <Row key={`f-${i}`}>
                     <b>Lesson {e.lessonNo ?? '—'}</b>
-                    <small> · {String(e.attemptedAt ?? e.LessonDate ?? '').slice(0,10)}</small>
+                    <small> · {String(e.attemptedAt ?? '').slice(0,10)}</small>
                   </Row>
                 )) : <EmptyState>No missed lessons.</EmptyState>}
               </List>

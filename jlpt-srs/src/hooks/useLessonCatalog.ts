@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { LessonCatalog } from '@/lib/api/types';
-import type { JLPTLevelStr } from '@/lib/user-data';
+import type { JLPTLevelStr } from '@/types/userV1';
 import { getLessonCatalogFromFirestore } from '@/lib/api/lessons';
 import { loadLessonCatalog, saveLessonCatalog, type CachedLessonCatalog } from '@/lib/cache/lessons';
 

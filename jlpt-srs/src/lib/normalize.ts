@@ -1,6 +1,12 @@
 // TODO: normalizeWord, normalizeList, wid
 // src/lib/normalize.ts
-import type { RawWord } from './api';
+// Minimal shape expected from a raw vocab feed
+export type RawWord = {
+  word?: string;
+  furigana?: string;
+  meaning?: string;
+  level?: number;
+};
 import type { Word, JLPTLevel } from '@/types/vocab';
 
 // Make a stable id for a word (avoid commas vs semicolons etc.)

@@ -62,7 +62,7 @@ export function buildVocabMCQ(
   // Rank by kanji-length proximity (loose) + tiny jitter to break ties
   const ranked = cand
     .map(c => {
-      const disp = primaryKanjiVariant(c.kanji!) ?? c.kanji!;
+      const disp = c.kanji!;
       const len  = Math.max(1, countHan(disp));
       const score = -Math.abs(len - targetLen) + (Math.random() * 0.05);
       return { disp, score };

@@ -1,6 +1,7 @@
 // TODO: makeTopicGroups(words)
 // src/lib/group.ts
 import type { Word, TopicGroup } from '@/types/vocab';
+import { toCanonicalTopic } from '@/types/vocab';
 
 /**
  * Very simple topic heuristics v1:
@@ -37,7 +38,8 @@ export function makeTopicGroups(words: Word[]): { groups: TopicGroup[]; withTopi
   // assign topicKey on each word
   const withTopics = words.map(w => {
     const hit = TOPIC_DEFS.find(def => def.test(w));
-    return { ...w, topicKey: hit ? hit.key : OTHER.key };
+    const key = hit ? hit.key : OTHER.key;
+    return { ...w, topicKey: toCanonicalTopic(key) } as Word;
   });
 
   // group

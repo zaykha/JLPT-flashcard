@@ -1,5 +1,5 @@
 // src/helpers/sanitize.ts
-import type { LessonQuizSnapshot } from '@/lib/user-data';
+import type { LessonQuizSnapshot } from '@/types/lessonV1';
 
 export function stripUndefinedDeep<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));

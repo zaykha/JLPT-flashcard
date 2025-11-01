@@ -1,5 +1,5 @@
 import { sanitizeSnapshot } from '@/helpers/sanitize';
-import type { LessonQuizSnapshot } from '@/lib/user-data';
+import type { LessonQuizSnapshot } from '@/types/lessonV1';
 
 export type AttemptsLS = {
   vocab?: LessonQuizSnapshot[];
@@ -42,4 +42,3 @@ export function saveLocalBest(uid: string, lessonNo: number, phase: 'vocab' | 'g
 export function clearLocalAttempts(uid: string, lessonNo: number) {
   try { localStorage.removeItem(attemptsKey(uid, lessonNo)); } catch {}
 }
-

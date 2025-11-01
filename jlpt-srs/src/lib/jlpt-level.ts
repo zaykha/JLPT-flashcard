@@ -1,4 +1,5 @@
-import type { JLPTLevelStr } from '@/lib/user-data';
+import type { JLPTLevelStr } from '@/types/userV1';
 export function levelStrToNum(l: JLPTLevelStr): number {
-  return { N1:1, N2:2, N3:3, N4:4, N5:5 }[l] ?? 5;
+  const map = { N1: 1, N2: 2, N3: 3, N4: 4, N5: 5 } as const;
+  return map[l] ?? 5;
 }

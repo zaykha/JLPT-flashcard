@@ -2,7 +2,7 @@
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { db } from '@/lib/firebase'; // adjust if your db export lives elsewhere
 import type { LessonCatalog } from '@/lib/api/types';
-import type { JLPTLevelStr } from '@/lib/user-data';
+import type { JLPTLevelStr } from '@/types/userV1';
 
 const LEVEL_RANGES: Record<JLPTLevelStr, { start: number; end: number }> = {
   N5: { start: 1, end: 66 },
